@@ -1,0 +1,98 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n %}
+
+{% block content %}
+    <section class="vorin-hero mb-6 rounded-default overflow-hidden">
+        <div class="vorin-hero__inner">
+            <div>
+                <p class="vorin-eyebrow">{{ panel_settings.site_subheader }}</p>
+                <h1 class="vorin-hero__title">{% trans "Account settings" %}</h1>
+                <p class="vorin-hero__copy">
+                    {% trans "Manage your avatar, contact information, and operator profile from one reusable VorinPanel screen." %}
+                </p>
+            </div>
+
+            <div class="vorin-status">
+                <div>
+                    <span class="vorin-status__label">{% trans "Username" %}</span>
+                    <strong>{{ request.user.get_username }}</strong>
+                </div>
+                <div>
+                    <span class="vorin-status__label">{% trans "Access" %}</span>
+                    <strong>{{ request.user.vorin_role_label }}</strong>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <form method="post" enctype="multipart/form-data" class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+        {% csrf_token %}
+
+        <article class="vorin-surface">
+            <div class="vorin-surface__header">
+                <div>
+                    <p class="vorin-eyebrow">{% trans "Identity" %}</p>
+                    <h2 class="vorin-heading">{% trans "Core user fields" %}</h2>
+                </div>
+            </div>
+
+            <div class="vorin-form-grid">
+                {% for field in user_form %}
+                    <div class="vorin-field{% if field.name == 'email' %} vorin-field--full{% endif %}">
+                        <label for="{{ field.id_for_label }}" class="vorin-field__label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <p class="vorin-field__help">{{ field.help_text }}</p>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <p class="vorin-field__error">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        </article>
+
+        <article class="vorin-surface">
+            <div class="vorin-surface__header">
+                <div>
+                    <p class="vorin-eyebrow">{% trans "Profile" %}</p>
+                    <h2 class="vorin-heading">{% trans "Avatar and preferences" %}</h2>
+                </div>
+            </div>
+
+            <div class="vorin-profile-preview">
+                <div class="vorin-profile-preview__avatar">
+                    {% include "vorin_admin/includes/avatar.html" with user=request.user circle=True %}
+                </div>
+                <div>
+                    <p class="vorin-profile-preview__name">
+                        {{ request.user.get_full_name|default:request.user.get_username }}
+                    </p>
+                    <p class="vorin-profile-preview__meta">{{ request.user.vorin_role_label }}</p>
+                </div>
+            </div>
+
+            <div class="vorin-form-stack">
+                {% for field in settings_form %}
+                    <div class="vorin-field">
+                        <label for="{{ field.id_for_label }}" class="vorin-field__label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <p class="vorin-field__help">{{ field.help_text }}</p>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <p class="vorin-field__error">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        </article>
+
+        <div class="lg:col-span-2 flex justify-end">
+            <button type="submit" class="vorin-primary-button">
+                {% trans "Save account settings" %}
+            </button>
+        </div>
+    </form>
+{% endblock %}

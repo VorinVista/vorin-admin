@@ -1,0 +1,76 @@
+{% load i18n vorin %}
+
+<div class="vorin-topbar border-b border-base-200 mb-4 px-4 z-40 dark:border-base-800 {% element_classes 'header' %}">
+    <div class="{% if not cl.model_admin.list_fullwidth and is_fullwidth != "1" %}container{% endif %} flex items-center h-16 mx-auto py-3 {% element_classes 'header_inner' %}">
+        <div id="header-inner" class="flex gap-4 items-center relative w-full">
+            <div class="flex gap-3 items-center min-w-0 grow">
+                {% if is_nav_sidebar_enabled and not is_popup %}
+                    <button type="button" class="vorin-topbar__icon" data-vorin-sidebar-toggle aria-label="{% trans 'Toggle sidebar' %}">
+                        <span class="material-symbols-outlined">menu</span>
+                    </button>
+                {% endif %}
+
+                {% if panel_settings.show_search %}
+                    <button type="button" class="vorin-topbar__search" data-vorin-command-launch>
+                        <span class="material-symbols-outlined">manage_search</span>
+                        <span class="vorin-topbar__search-label">{% trans "Search" %}</span>
+                        <span class="vorin-topbar__search-shortcut">Ctrl+/</span>
+                    </button>
+                {% endif %}
+            </div>
+
+            {% if has_permission %}
+                <div class="flex gap-3 items-center shrink-0">
+                    {% action_list %}
+
+                    {% if panel_settings.show_theme_switch %}
+                        {% include "vorin_admin/includes/theme_switch_dropdown.html" %}
+                    {% endif %}
+
+                    <details class="vorin-profile-shell" data-vorin-menu>
+                        <summary class="vorin-topbar__profile">
+                            {% include "vorin_admin/includes/avatar.html" with user=request.user size="sm" circle=True %}
+                            <span class="vorin-topbar__profile-dot"></span>
+                        </summary>
+
+                        <div class="vorin-profile-menu">
+                            <div class="vorin-profile-menu__head">
+                                {% include "vorin_admin/includes/avatar.html" with user=request.user circle=True %}
+                                <div class="min-w-0">
+                                    <p class="vorin-profile-menu__name">
+                                        {{ request.user.get_full_name|default:request.user.get_username }}
+                                    </p>
+                                    <p class="vorin-profile-menu__role">
+                                        {{ request.user.vorin_role_label }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="vorin-profile-menu__links">
+                                <a href="{{ panel_settings.account_settings_path }}">
+                                    <span class="material-symbols-outlined">manage_accounts</span>
+                                    <span>{% trans "Edit Profile & Avatar" %}</span>
+                                </a>
+
+                                {% if request.user.has_usable_password %}
+                                    <a href="{% url 'admin:password_change' %}">
+                                        <span class="material-symbols-outlined">key</span>
+                                        <span>{% trans "Change Password" %}</span>
+                                    </a>
+                                {% endif %}
+
+                                <form method="post" action="{% url 'admin:logout' %}">
+                                    {% csrf_token %}
+                                    <button type="submit">
+                                        <span class="material-symbols-outlined">logout</span>
+                                        <span>{% trans "Log Out" %}</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

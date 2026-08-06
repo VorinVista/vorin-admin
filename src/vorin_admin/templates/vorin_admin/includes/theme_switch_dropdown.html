@@ -1,0 +1,26 @@
+{% load i18n %}
+
+{% if not theme %}
+    <details class="vorin-theme-switch" data-vorin-menu>
+        <summary class="vorin-topbar__icon vorin-topbar__theme-trigger" aria-label="{% trans 'Theme switcher' %}">
+            <span class="material-symbols-outlined" data-vorin-theme-icon>computer</span>
+        </summary>
+
+        <nav class="vorin-theme-switch__menu">
+            <button type="button" data-vorin-theme-option="light">
+                <span class="material-symbols-outlined">light_mode</span>
+                <span>{% trans "Light" %}</span>
+            </button>
+
+            <button type="button" data-vorin-theme-option="dark">
+                <span class="material-symbols-outlined">dark_mode</span>
+                <span>{% trans "Dark" %}</span>
+            </button>
+
+            <button type="button" data-vorin-theme-option="auto">
+                <span class="material-symbols-outlined">computer</span>
+                <span>{% trans "System" %}</span>
+            </button>
+        </nav>
+    </details>
+{% endif %}

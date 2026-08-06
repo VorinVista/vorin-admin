@@ -1,0 +1,142 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n %}
+
+{% block content %}
+    <section class="vorin-hero mb-6 rounded-default overflow-hidden">
+        <div class="vorin-hero__inner">
+            <div>
+                <p class="vorin-eyebrow">{{ panel_settings.site_subheader }}</p>
+                <h1 class="vorin-hero__title">{{ panel_settings.welcome_title }}</h1>
+                <p class="vorin-hero__copy">{{ panel_settings.welcome_message }}</p>
+            </div>
+
+            <div class="vorin-status">
+                <div>
+                    <span class="vorin-status__label">Generated</span>
+                    <strong>{{ dashboard_generated_at|date:"M j, Y H:i" }}</strong>
+                </div>
+                {% if panel_settings.support_email %}
+                    <div>
+                        <span class="vorin-status__label">Support</span>
+                        <strong>{{ panel_settings.support_email }}</strong>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <section class="vorin-card-grid mb-6">
+        {% for card in dashboard_cards %}
+            <article class="vorin-card">
+                <div class="vorin-card__icon">
+                    <span class="material-symbols-outlined">{{ card.icon }}</span>
+                </div>
+                <div>
+                    <p class="vorin-card__label">{{ card.title }}</p>
+                    <p class="vorin-card__value">{{ card.value|default:"-" }}</p>
+                    <p class="vorin-card__meta">{{ card.description }}</p>
+                </div>
+            </article>
+        {% endfor %}
+    </section>
+
+    <section class="grid gap-6 lg:grid-cols-[1.6fr_1fr] mb-6">
+        <article class="vorin-surface">
+            <div class="vorin-surface__header">
+                <div>
+                    <p class="vorin-eyebrow">Enabled modules</p>
+                    <h2 class="vorin-heading">Reusable building blocks</h2>
+                </div>
+            </div>
+
+            <div class="vorin-pill-grid">
+                {% for module in enabled_modules %}
+                    <div class="vorin-pill">
+                        <span class="material-symbols-outlined">{{ module.icon }}</span>
+                        <span>{{ module.label }}</span>
+                    </div>
+                {% empty %}
+                    <p class="vorin-muted">No modules enabled yet.</p>
+                {% endfor %}
+            </div>
+        </article>
+
+        <article class="vorin-surface">
+            <div class="vorin-surface__header">
+                <div>
+                    <p class="vorin-eyebrow">Quick actions</p>
+                    <h2 class="vorin-heading">Common jumps</h2>
+                </div>
+            </div>
+
+            <div class="vorin-link-list">
+                {% for action in quick_actions %}
+                    <a class="vorin-link-card" href="{{ action.link }}">
+                        <span class="material-symbols-outlined">{{ action.icon }}</span>
+                        <span>
+                            <strong>{{ action.title }}</strong>
+                            <small>{{ action.description }}</small>
+                        </span>
+                    </a>
+                {% endfor %}
+            </div>
+        </article>
+    </section>
+
+    <section class="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+        <article class="vorin-surface">
+            <div class="vorin-surface__header">
+                <div>
+                    <p class="vorin-eyebrow">Admin coverage</p>
+                    <h2 class="vorin-heading">Registered models by app</h2>
+                </div>
+            </div>
+
+            <div class="vorin-table-wrap">
+                <table class="vorin-table">
+                    <thead>
+                        <tr>
+                            <th>App</th>
+                            <th>Models</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in registered_model_summary %}
+                            <tr>
+                                <td>{{ row.app_label }}</td>
+                                <td>{{ row.count }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="2">No models registered yet.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </article>
+
+        <article class="vorin-surface">
+            <div class="vorin-surface__header">
+                <div>
+                    <p class="vorin-eyebrow">Recent activity</p>
+                    <h2 class="vorin-heading">Latest admin log entries</h2>
+                </div>
+            </div>
+
+            <div class="vorin-timeline">
+                {% for entry in recent_actions %}
+                    <div class="vorin-timeline__item">
+                        <p class="vorin-timeline__title">{{ entry.object_repr }}</p>
+                        <p class="vorin-timeline__meta">
+                            {{ entry.user }} · {{ entry.action_time|date:"M j, Y H:i" }}
+                        </p>
+                    </div>
+                {% empty %}
+                    <p class="vorin-muted">The admin log will appear here once your team starts using the panel.</p>
+                {% endfor %}
+            </div>
+        </article>
+    </section>
+{% endblock %}

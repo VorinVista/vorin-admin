@@ -1,0 +1,19 @@
+<footer class="vorin-footer-bar">
+    <div class="vorin-footer-bar__inner">
+        <div class="vorin-footer-bar__copy">
+            <span>
+                &copy; {{ current_year }}, made with
+                <span class="vorin-footer-bar__heart" aria-hidden="true">&#10084;</span>
+                by
+                <a href="https://vorinvista.com" target="_blank" rel="noreferrer">VorinVista</a>
+            </span>
+        </div>
+
+        <nav class="vorin-footer-bar__nav" aria-label="Footer links">
+            <a href="{% url 'admin:index' %}">Dashboard</a>
+            {% if panel_settings.site_url %}
+                <a href="{{ panel_settings.site_url }}" target="_blank" rel="noreferrer">View Site</a>
+            {% endif %}
+        </nav>
+    </div>
+</footer>

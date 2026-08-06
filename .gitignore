@@ -1,0 +1,18 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Django
+db.sqlite3
+example_project/db.sqlite3
+staticfiles/
+media/
+runserver*.log
+example_project/runserver*.log

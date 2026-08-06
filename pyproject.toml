@@ -1,0 +1,37 @@
+[project]
+name = "vorin-admin"
+version = "0.1.0"
+description = "Reusable Django admin foundation for VorinPanel."
+readme = "README.md"
+authors = [
+    { name = "Exxotelis", email = "telis@vorinvista.com" }
+]
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "Django>=5.2,<5.3",
+    "django-unfold>=0.102,<0.103",
+    "Pillow>=11.0,<12.0",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+vorin_admin = [
+    "templates/**/*.html",
+    "static/**/*",
+]
+django_vorin = [
+    "templates/**/*.html",
+]
+
+[dependency-groups]
+dev = []
+
+[build-system]
+requires = ["setuptools>=80", "wheel"]
+build-backend = "setuptools.build_meta"

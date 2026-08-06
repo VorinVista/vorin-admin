@@ -1,0 +1,14 @@
+{% with avatar_url=user.avatar_url %}
+    <div class="vorin-avatar {% if size == "md" %}vorin-avatar--md{% elif size == "sm" %}vorin-avatar--sm{% elif size == "xs" %}vorin-avatar--xs{% else %}vorin-avatar--default{% endif %}{% if circle %} vorin-avatar--circle{% else %} vorin-avatar--rounded{% endif %}">
+        {% if avatar_url %}
+            <img
+                src="{{ avatar_url }}"
+                alt="{{ user.get_full_name|default:user.get_username }}"
+                class="vorin-avatar__image">
+        {% else %}
+            <span class="vorin-avatar__initial">
+                {{ user.get_full_name.0|default:user.get_username.0|upper }}
+            </span>
+        {% endif %}
+    </div>
+{% endwith %}

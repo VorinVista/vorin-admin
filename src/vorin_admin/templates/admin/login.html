@@ -1,0 +1,152 @@
+{% load i18n static %}
+{% now "Y" as current_year %}
+<!doctype html>
+<html lang="{{ LANGUAGE_CODE|default:'en' }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ title }} | {{ site_title|default:panel_settings.site_title }}</title>
+    <link rel="icon" type="image/png" href="{% static 'vorin_admin/branding/vv-logo.png' %}">
+    <link rel="stylesheet" href="{% static 'vorin_admin/css/vorin_panel.css' %}">
+    {{ form.media }}
+</head>
+<body class="vorin-login-page">
+    <div class="vorin-login-shell">
+        <section class="vorin-login-panel">
+            <a class="vorin-login-panel__return" href="{{ site_url|default:panel_settings.site_url|default:'/' }}">
+                {% translate "Return to site" %}
+            </a>
+
+            <div class="vorin-login-panel__card">
+                <div class="vorin-login-panel__brand">
+                    <img
+                        src="{% static 'vorin_admin/branding/logo-dark.png' %}"
+                        alt="{{ panel_settings.site_title }}"
+                        class="vorin-login-panel__logo">
+                    <p class="vorin-eyebrow">{{ panel_settings.site_subheader }}</p>
+                    <h1 class="vorin-login-panel__title">
+                        {% blocktranslate with site_name=panel_settings.site_title %}Sign in to {{ site_name }}{% endblocktranslate %}
+                    </h1>
+                    <p class="vorin-login-panel__intro">{{ panel_settings.login_message }}</p>
+                </div>
+
+                {% if messages %}
+                    <div class="vorin-message-stack">
+                        {% for message in messages %}
+                            <div class="vorin-alert vorin-alert--{{ message.level_tag|default:'info' }}">
+                                <div class="vorin-alert__body">{{ message }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% if form.errors or form.non_field_errors %}
+                    <div class="vorin-message-stack">
+                        <div class="vorin-alert vorin-alert--error">
+                            <div class="vorin-alert__body">
+                                {% translate "Please check your username and password and try again." %}
+                            </div>
+                        </div>
+
+                        {% if user.is_authenticated %}
+                            <div class="vorin-alert vorin-alert--warning">
+                                <div class="vorin-alert__body">
+                                    {% blocktranslate trimmed %}
+                                        You are signed in as {{ user.get_username }}, but this account does not have access to this control room.
+                                    {% endblocktranslate %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+                <form action="{{ app_path }}" method="post" id="login-form" class="vorin-login-form">
+                    {% csrf_token %}
+                    {% translate "Username" as username_label %}
+                    {% translate "Password" as password_label %}
+
+                    <div class="vorin-login-form__field">
+                        <label for="id_username" class="vorin-login-form__label">{{ form.username.label|default:username_label }}</label>
+                        <input
+                            id="id_username"
+                            name="{{ form.username.html_name }}"
+                            type="text"
+                            value="{{ form.username.value|default_if_none:'' }}"
+                            class="vorin-login-form__input"
+                            autocomplete="username"
+                            autofocus>
+                    </div>
+
+                    <div class="vorin-login-form__field">
+                        <label for="id_password" class="vorin-login-form__label">{{ form.password.label|default:password_label }}</label>
+                        <input
+                            id="id_password"
+                            name="{{ form.password.html_name }}"
+                            type="password"
+                            class="vorin-login-form__input"
+                            autocomplete="current-password">
+                    </div>
+
+                    {% if next %}
+                        <input type="hidden" name="next" value="{{ next }}">
+                    {% endif %}
+
+                    <div class="vorin-login-form__actions">
+                        <button type="submit" class="vorin-primary-button vorin-login-form__submit">
+                            {% translate "Log in" %}
+                        </button>
+
+                        {% url 'admin_password_reset' as password_reset_url %}
+                        {% url 'admin:admin_password_reset' as admin_password_reset_url %}
+                        {% if password_reset_url or admin_password_reset_url %}
+                            <a href="{{ password_reset_url|default:admin_password_reset_url }}" class="vorin-login-form__secondary">
+                                {% translate "Forgot password?" %}
+                            </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <aside class="vorin-login-showcase" aria-label="{% translate 'VorinVista brand panel' %}">
+            <div class="vorin-login-showcase__content">
+                <div class="vorin-login-showcase__logo-wrap">
+                    <img
+                        src="{% static 'vorin_admin/branding/vv-logo.png' %}"
+                        alt="{{ panel_settings.site_title }}"
+                        class="vorin-login-showcase__mark">
+                </div>
+
+                <div>
+                    <p class="vorin-eyebrow">{% translate "VorinVista Control Room" %}</p>
+                    <h2 class="vorin-login-showcase__title">
+                        {% translate "A polished admin surface for content, leads, billing, and client operations." %}
+                    </h2>
+                    <p class="vorin-login-showcase__copy">
+                        {% translate "Built as the reusable back-office layer for every future Django project in the Vorin ecosystem." %}
+                    </p>
+                </div>
+
+                <div class="vorin-login-showcase__grid">
+                    <article class="vorin-login-metric">
+                        <span class="vorin-login-metric__label">{% translate "Environment" %}</span>
+                        <strong>{{ panel_settings.environment.label|default:panel_settings.site_version }}</strong>
+                    </article>
+                    <article class="vorin-login-metric">
+                        <span class="vorin-login-metric__label">{% translate "Support" %}</span>
+                        <strong>{{ panel_settings.support_email }}</strong>
+                    </article>
+                    <article class="vorin-login-metric">
+                        <span class="vorin-login-metric__label">{% translate "Brand" %}</span>
+                        <strong>{{ panel_settings.site_title }}</strong>
+                    </article>
+                    <article class="vorin-login-metric">
+                        <span class="vorin-login-metric__label">{% translate "Year" %}</span>
+                        <strong>{{ current_year }}</strong>
+                    </article>
+                </div>
+            </div>
+        </aside>
+    </div>
+</body>
+</html>

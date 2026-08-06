@@ -1,0 +1,84 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n %}
+
+{% block content %}
+    <section class="vorin-hero mb-6 rounded-default overflow-hidden">
+        <div class="vorin-hero__inner">
+            <div>
+                <p class="vorin-eyebrow">{{ panel_settings.site_subheader }}</p>
+                <h1 class="vorin-hero__title">{% trans "Control settings" %}</h1>
+                <p class="vorin-hero__copy">
+                    {% trans "Shape the reusable Vorin admin workspace from one central hub, starting with users, permissions, navigation, and your installed project areas." %}
+                </p>
+            </div>
+
+            <div class="vorin-status">
+                <div>
+                    <span class="vorin-status__label">{% trans "Workspace" %}</span>
+                    <strong>{{ panel_settings.site_title }}</strong>
+                </div>
+                <div>
+                    <span class="vorin-status__label">{% trans "Version" %}</span>
+                    <strong>{{ panel_settings.site_version }}</strong>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="vorin-settings-stats">
+        {% for stat in settings_stats %}
+            <article class="vorin-surface vorin-settings-stat">
+                <p class="vorin-eyebrow">{{ stat.label }}</p>
+                <h2 class="vorin-heading">{{ stat.value }}</h2>
+            </article>
+        {% endfor %}
+    </section>
+
+    <section class="vorin-settings-grid">
+        {% for section in settings_sections %}
+            <article class="vorin-surface vorin-settings-card">
+                <div class="vorin-surface__header">
+                    <div class="vorin-settings-card__intro">
+                        <span class="material-symbols-outlined vorin-settings-card__icon">{{ section.icon }}</span>
+                        <div>
+                            <p class="vorin-eyebrow">{{ section.eyebrow }}</p>
+                            <h2 class="vorin-heading">{{ section.title }}</h2>
+                            <p class="vorin-settings-card__copy">{{ section.description }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vorin-settings-links">
+                    {% for item in section.items %}
+                        {% if item.link %}
+                            <a href="{{ item.link }}" class="vorin-settings-link" {% if item.external %}target="_blank" rel="noreferrer"{% endif %}>
+                                <div class="vorin-settings-link__body">
+                                    <p class="vorin-settings-link__title">{{ item.title }}</p>
+                                    <p class="vorin-settings-link__copy">{{ item.description }}</p>
+                                </div>
+                                <span class="material-symbols-outlined">arrow_forward</span>
+                            </a>
+                        {% else %}
+                            <div class="vorin-settings-link vorin-settings-link--disabled">
+                                <div class="vorin-settings-link__body">
+                                    <p class="vorin-settings-link__title">{{ item.title }}</p>
+                                    <p class="vorin-settings-link__copy">{{ item.description }}</p>
+                                </div>
+                                <span class="material-symbols-outlined">schedule</span>
+                            </div>
+                        {% endif %}
+                    {% empty %}
+                        <div class="vorin-settings-link vorin-settings-link--disabled">
+                            <div class="vorin-settings-link__body">
+                                <p class="vorin-settings-link__title">{% trans "More modules coming next" %}</p>
+                                <p class="vorin-settings-link__copy">{% trans "This section will grow as we wire more reusable admin preferences into VorinPanel." %}</p>
+                            </div>
+                            <span class="material-symbols-outlined">schedule</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </article>
+        {% endfor %}
+    </section>
+{% endblock %}
