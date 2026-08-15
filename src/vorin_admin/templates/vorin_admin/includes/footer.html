@@ -1,19 +1,20 @@
 <footer class="vorin-footer-bar">
     <div class="vorin-footer-bar__inner">
         <div class="vorin-footer-bar__copy">
-            <span>
-                &copy; {{ current_year }}, made with
-                <span class="vorin-footer-bar__heart" aria-hidden="true">&#10084;</span>
-                by
-                <a href="https://vorinvista.com" target="_blank" rel="noreferrer">VorinVista</a>
-            </span>
+            <span>&copy; {{ current_year }}, {{ panel_settings.footer_text }}</span>
+            <span class="vorin-footer-bar__heart" aria-hidden="true">&#10084;</span>
+            <span>by</span>
+            <a href="{{ panel_settings.footer_brand_url }}" target="_blank" rel="noreferrer">
+                <strong>{{ panel_settings.footer_brand_name }}</strong>
+            </a>
         </div>
 
         <nav class="vorin-footer-bar__nav" aria-label="Footer links">
             <a href="{% url 'admin:index' %}">Dashboard</a>
-            {% if panel_settings.site_url %}
-                <a href="{{ panel_settings.site_url }}" target="_blank" rel="noreferrer">View Site</a>
-            {% endif %}
+            <a href="{% url 'vorin_admin:account_settings' %}">Profile</a>
+            {% for item in panel_settings.footer_links %}
+                <a href="{{ item.link }}"{% if item.external %} target="_blank" rel="noreferrer"{% endif %}>{{ item.title }}</a>
+            {% endfor %}
         </nav>
     </div>
 </footer>

@@ -10,6 +10,7 @@ def home_redirect(_request):
 
 urlpatterns = [
     path("", home_redirect),
+    path("admin/vorin/account/", lambda request: redirect("vorin_admin:account_settings")),
     path(
         "admin/account/",
         include(("vorin_admin.urls", "vorin_admin"), namespace="vorin_admin"),

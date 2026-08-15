@@ -1,32 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1800" viewBox="0 0 1440 1800" fill="none">
-  <rect width="1440" height="1800" fill="#011538"/>
-  <circle cx="1120" cy="320" r="320" fill="#0B409C" fill-opacity="0.22"/>
-  <circle cx="250" cy="1370" r="260" fill="#F17020" fill-opacity="0.16"/>
+  <rect width="1440" height="1800" fill="#0F172A"/>
+  <circle cx="1120" cy="320" r="320" fill="#4F46E5" fill-opacity="0.18"/>
+  <circle cx="250" cy="1370" r="260" fill="#38BDF8" fill-opacity="0.12"/>
   <circle cx="770" cy="930" r="520" stroke="url(#ring)" stroke-opacity="0.18" stroke-width="2"/>
   <path d="M455 682L602 972L729 972L585 772L455 682Z" fill="url(#leftWing)"/>
   <path d="M981 682L849 772L706 1060L769 1178L855 1024L981 682Z" fill="url(#rightWing)"/>
   <path d="M585 772L729 972L849 772L769 1178H665L585 772Z" fill="url(#core)"/>
-  <circle cx="455" cy="682" r="28" fill="#FFB347"/>
-  <circle cx="981" cy="682" r="28" fill="#FFB347"/>
-  <text x="160" y="1480" fill="#F17020" font-family="Segoe UI, Arial, sans-serif" font-size="86" font-weight="700">VORIN</text>
-  <text x="520" y="1480" fill="#F7F9FC" font-family="Segoe UI, Arial, sans-serif" font-size="86" font-weight="400">VISTA</text>
-  <text x="160" y="1580" fill="#D7E1EF" font-family="Segoe UI, Arial, sans-serif" font-size="40">VorinPanel • internal control room</text>
+  <circle cx="455" cy="682" r="28" fill="#93C5FD"/>
+  <circle cx="981" cy="682" r="28" fill="#93C5FD"/>
+  <text x="160" y="1480" fill="#F8FAFC" font-family="Segoe UI, Arial, sans-serif" font-size="86" font-weight="700">VORIN ADMIN</text>
+  <text x="160" y="1580" fill="#CBD5E1" font-family="Segoe UI, Arial, sans-serif" font-size="40">Reusable Django admin engine</text>
   <defs>
     <linearGradient id="leftWing" x1="455" y1="682" x2="729" y2="1090" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#FFB347"/>
-      <stop offset="1" stop-color="#FF445C"/>
+      <stop stop-color="#93C5FD"/>
+      <stop offset="1" stop-color="#38BDF8"/>
     </linearGradient>
     <linearGradient id="rightWing" x1="981" y1="682" x2="769" y2="1178" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#FFB347"/>
-      <stop offset="1" stop-color="#F17020"/>
+      <stop stop-color="#93C5FD"/>
+      <stop offset="1" stop-color="#4F46E5"/>
     </linearGradient>
     <linearGradient id="core" x1="585" y1="772" x2="849" y2="1178" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#0B409C"/>
-      <stop offset="1" stop-color="#18185E"/>
+      <stop stop-color="#4F46E5"/>
+      <stop offset="1" stop-color="#1E293B"/>
     </linearGradient>
     <linearGradient id="ring" x1="250" y1="420" x2="1290" y2="1460" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#F17020"/>
-      <stop offset="1" stop-color="#0B409C"/>
+      <stop stop-color="#38BDF8"/>
+      <stop offset="1" stop-color="#4F46E5"/>
     </linearGradient>
   </defs>
 </svg>

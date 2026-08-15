@@ -9,7 +9,7 @@ def get_user_settings(user):
         return None
 
     try:
-        return user.vorin_panel_settings
+        return user.vorin_admin_settings
     except ObjectDoesNotExist:
         return None
 

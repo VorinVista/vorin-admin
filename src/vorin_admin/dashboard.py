@@ -61,7 +61,7 @@ def dashboard_callback(request, context: dict[str, Any]) -> dict[str, Any]:
         {
             "title": "Registered models",
             "value": len(admin.site._registry),
-            "description": "Models currently wired into the admin layer.",
+            "description": "Models currently available inside the admin engine.",
             "icon": "inventory_2",
         },
         {
@@ -73,13 +73,13 @@ def dashboard_callback(request, context: dict[str, Any]) -> dict[str, Any]:
         {
             "title": "Active modules",
             "value": len(panel["enabled_modules"]),
-            "description": "Reusable VorinPanel modules enabled for this build.",
+            "description": "Module registrations currently enabled for this build.",
             "icon": "widgets",
         },
         {
             "title": "Staff users",
             "value": _safe_count(user_model.objects.filter(is_staff=True)),
-            "description": "Users with access to the control room.",
+            "description": "Users with access to this admin workspace.",
             "icon": "groups",
         },
     ]
@@ -106,8 +106,8 @@ def dashboard_callback(request, context: dict[str, Any]) -> dict[str, Any]:
     if panel.get("support_url"):
         quick_actions.append(
             {
-                "title": "Ask VorinVista",
-                "description": "Reach support or leave an operations note.",
+                "title": "Support channel",
+                "description": "Open the configured support path for this admin.",
                 "icon": "support_agent",
                 "link": panel["support_url"],
             }
@@ -116,7 +116,7 @@ def dashboard_callback(request, context: dict[str, Any]) -> dict[str, Any]:
     context.update(
         {
             "panel_settings": panel,
-            "title": panel.get("dashboard_title", "VorinPanel Dashboard"),
+            "title": panel.get("dashboard_title", "Admin dashboard"),
             "dashboard_cards": cards,
             "enabled_modules": panel["enabled_modules"],
             "recent_actions": _safe_recent_actions(),

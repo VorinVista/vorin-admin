@@ -1,5 +1,3 @@
-from importlib import import_module
-
-register = import_module("un" "fold.templatetags.un" "fold").register
+from vorin_admin.templatetags.vorin import register
 
 __all__ = ["register"]

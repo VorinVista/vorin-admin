@@ -2,8 +2,12 @@
 
 {% load i18n %}
 
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+{% block breadcrumbs %}{% endblock %}
+{% block content_title %}{% endblock %}
+
 {% block content %}
-    <section class="vorin-hero mb-6 rounded-default overflow-hidden">
+    <section class="vorin-hero vorin-section-space">
         <div class="vorin-hero__inner">
             <div>
                 <p class="vorin-eyebrow">{{ panel_settings.site_subheader }}</p>
@@ -26,7 +30,7 @@
         </div>
     </section>
 
-    <section class="vorin-card-grid mb-6">
+    <section class="vorin-card-grid vorin-section-space">
         {% for card in dashboard_cards %}
             <article class="vorin-card">
                 <div class="vorin-card__icon">
@@ -41,12 +45,12 @@
         {% endfor %}
     </section>
 
-    <section class="grid gap-6 lg:grid-cols-[1.6fr_1fr] mb-6">
+    <section class="vorin-dashboard-grid vorin-dashboard-grid--wide vorin-section-space">
         <article class="vorin-surface">
             <div class="vorin-surface__header">
                 <div>
                     <p class="vorin-eyebrow">Enabled modules</p>
-                    <h2 class="vorin-heading">Reusable building blocks</h2>
+                    <h2 class="vorin-heading">Registered modules</h2>
                 </div>
             </div>
 
@@ -66,7 +70,7 @@
             <div class="vorin-surface__header">
                 <div>
                     <p class="vorin-eyebrow">Quick actions</p>
-                    <h2 class="vorin-heading">Common jumps</h2>
+                    <h2 class="vorin-heading">Common destinations</h2>
                 </div>
             </div>
 
@@ -84,7 +88,7 @@
         </article>
     </section>
 
-    <section class="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+    <section class="vorin-dashboard-grid vorin-dashboard-grid--content">
         <article class="vorin-surface">
             <div class="vorin-surface__header">
                 <div>
@@ -129,9 +133,7 @@
                 {% for entry in recent_actions %}
                     <div class="vorin-timeline__item">
                         <p class="vorin-timeline__title">{{ entry.object_repr }}</p>
-                        <p class="vorin-timeline__meta">
-                            {{ entry.user }} · {{ entry.action_time|date:"M j, Y H:i" }}
-                        </p>
+                        <p class="vorin-timeline__meta">{{ entry.user }} | {{ entry.action_time|date:"M j, Y H:i" }}</p>
                     </div>
                 {% empty %}
                     <p class="vorin-muted">The admin log will appear here once your team starts using the panel.</p>

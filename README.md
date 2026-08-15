@@ -1,26 +1,30 @@
-## VorinPanel
+## Vorin Admin
 
-Reusable Django admin foundation for VorinVista projects.
+Reusable Django admin engine for multi-project use.
 
-The current theme layer is aligned to the real VorinVista parent project
-branding from `Exxotelis/VorinDjango`, using its orange/navy palette and logo
-direction instead of a generic dashboard skin.
+This package is designed to provide a configurable admin foundation that can be installed into different Django projects without carrying client-specific branding, URLs, menu structures, or permissions.
 
 ### What this repo gives you
 
 - A reusable Django app: `vorin_admin`
-- Opinionated VorinPanel configuration with VorinVista branding
+- Admin engine defaults for layout, dashboard, login, footer, and shell structure
 - Base admin classes like `VorinModelAdmin`
-- A branded login screen, footer, dashboard, sidebar shortcuts, and theme assets
-- An `example_project/` you can run locally and copy from for future projects
+- Navigation system hooks for sidebar, dropdown, footer, and account links
+- Module registration through a generic `module_registry`
+- Permission hooks for custom visibility and access rules
+- A self-contained theme layer that does not depend on `django-unfold`
+- An `example_project/` you can run locally and copy from
 
 ### Local setup
 
 ```bash
-uv sync
-uv run --project . python example_project/manage.py migrate
-uv run --project . python example_project/manage.py createsuperuser
-uv run --project . python example_project/manage.py runserver
+python -m venv .venv
+.venv\Scripts\activate
+python -m pip install --upgrade pip
+python -m pip install -e .
+python example_project/manage.py migrate
+python example_project/manage.py createsuperuser
+python example_project/manage.py runserver
 ```
 
 Admin URL:
@@ -31,31 +35,58 @@ http://127.0.0.1:8000/admin/
 
 ### Reusing in a new Django project
 
-Install from a Git repository:
+Install from PyPI once published:
 
 ```bash
-uv add "vorin-admin @ git+ssh://git@github.com/VorinVista/vorin-admin.git@v0.1.0"
+pip install vorin-admin
+```
+
+For local testing before publication, install from a wheel:
+
+```bash
+python -m pip install build
+python -m build
+pip install dist/vorin_admin-0.1.0-py3-none-any.whl
+```
+
+Or install directly from a Git repository:
+
+```bash
+pip install "vorin-admin @ git+ssh://git@github.com/your-org/vorin-admin.git@v0.1.0"
 ```
 
 Then in your `settings.py`:
 
 ```python
 from vorin_admin.config import build_vorin_settings
-from vorin_admin.settings import build_vorin_apps
+from vorin_admin.settings import build_vorin_apps, install_vorin_config
 
 VORIN_PANEL = {
-    "site_title": "Client Control Room",
-    "site_header": "VorinPanel",
-    "site_subheader": "Powered by VorinVista",
+    "site_title": "Operations Admin",
+    "site_header": "Operations Admin",
+    "site_subheader": "Internal workspace",
     "site_url": "https://example.com",
-    "support_url": "mailto:support@vorinvista.com",
-    "support_email": "support@vorinvista.com",
-    "modules": {
-        "content": True,
-        "blog": True,
-        "seo": True,
-        "analytics": True,
-        "enquiries": True,
+    "support_url": "mailto:ops@example.com",
+    "support_email": "ops@example.com",
+    "module_registry": [
+        {
+            "slug": "operations",
+            "label": "Operations",
+            "icon": "settings",
+            "description": "Core operational workflows.",
+        },
+        {
+            "slug": "reporting",
+            "label": "Reporting",
+            "icon": "monitoring",
+            "description": "Dashboards and summaries.",
+        },
+    ],
+    "footer_links": [
+        {"title": "Documentation", "link": "https://example.com/docs", "external": True},
+    ],
+    "permission_hooks": {
+        "settings_hub": lambda request: request.user.is_superuser,
     },
 }
 
@@ -88,5 +119,5 @@ class ArticleAdmin(VorinModelAdmin):
 
 ### Notes
 
-- This repo targets `Python 3.12` and `Django 5.2`.
-- The package is meant to standardize the first 80-90% of every admin build.
+- This repo targets `Python 3.11+` and `Django 5.2`.
+- The package is intended to standardize the admin shell, not project business logic.

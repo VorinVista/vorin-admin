@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
                     models.ImageField(
                         blank=True,
                         null=True,
-                        upload_to="vorin_panel/avatars/",
+                        upload_to="vorin_admin/avatars/",
                     ),
                 ),
                 ("job_title", models.CharField(blank=True, max_length=120)),
@@ -40,14 +40,14 @@ class Migration(migrations.Migration):
                     "user",
                     models.OneToOneField(
                         on_delete=django.db.models.deletion.CASCADE,
-                        related_name="vorin_panel_settings",
+                        related_name="vorin_admin_settings",
                         to=settings.AUTH_USER_MODEL,
                     ),
                 ),
             ],
             options={
-                "verbose_name": "Vorin panel user settings",
-                "verbose_name_plural": "Vorin panel user settings",
+                "verbose_name": "Admin user settings",
+                "verbose_name_plural": "Admin user settings",
             },
         ),
     ]

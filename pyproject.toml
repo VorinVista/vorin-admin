@@ -1,17 +1,28 @@
 [project]
 name = "vorin-admin"
 version = "0.1.0"
-description = "Reusable Django admin foundation for VorinPanel."
+description = "Reusable Django admin engine for multi-project use."
 readme = "README.md"
 authors = [
-    { name = "Exxotelis", email = "telis@vorinvista.com" }
+    { name = "Vorin Admin Team" }
 ]
-requires-python = ">=3.12,<3.13"
+requires-python = ">=3.11,<3.13"
 dependencies = [
     "Django>=5.2,<5.3",
-    "django-unfold>=0.102,<0.103",
     "Pillow>=11.0,<12.0",
 ]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Framework :: Django",
+    "Framework :: Django :: 5.2",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://vorinvista.com/"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

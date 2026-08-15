@@ -7,7 +7,7 @@ from django.http import HttpRequest
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
-from vorin_admin.config import get_panel_settings
+from vorin_admin.config import get_panel_settings, resolve_permission_hook
 
 DEFAULT_APP_META: dict[str, dict[str, str]] = {
     "auth": {"title": _("Django"), "icon": "admin_panel_settings"},
@@ -22,6 +22,24 @@ def _external_item(*, title: str, icon: str, link: str) -> dict[str, Any]:
         "active": False,
         "has_permission": True,
     }
+
+
+def _item_is_allowed(item: dict[str, Any], request: HttpRequest, panel: dict[str, Any]) -> bool:
+    permission = item.get("permission")
+
+    if permission is None:
+        return True
+
+    if isinstance(permission, bool):
+        return permission
+
+    if isinstance(permission, str):
+        return resolve_permission_hook(request, permission, panel_settings=panel, default=True)
+
+    if callable(permission):
+        return bool(permission(request))
+
+    return True
 
 
 def _build_model_children(request: HttpRequest, app: dict[str, Any]) -> list[dict[str, Any]]:
@@ -119,7 +137,9 @@ def build_sidebar_navigation(request: HttpRequest) -> list[dict]:
             )
         )
 
-    quick_links.extend(panel.get("sidebar_links", []))
+    quick_links.extend(
+        item for item in panel.get("sidebar_links", []) if _item_is_allowed(item, request, panel)
+    )
 
     if quick_links:
         groups.append(

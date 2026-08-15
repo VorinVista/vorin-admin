@@ -8,10 +8,10 @@ class VorinUserSettings(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="vorin_panel_settings",
+        related_name="vorin_admin_settings",
     )
     avatar = models.ImageField(
-        upload_to="vorin_panel/avatars/",
+        upload_to="vorin_admin/avatars/",
         blank=True,
         null=True,
     )
@@ -22,8 +22,8 @@ class VorinUserSettings(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = "Vorin panel user settings"
-        verbose_name_plural = "Vorin panel user settings"
+        verbose_name = "Admin user settings"
+        verbose_name_plural = "Admin user settings"
 
     def __str__(self) -> str:
-        return f"{self.user} Vorin settings"
+        return f"{self.user} admin settings"

@@ -24,5 +24,5 @@ if ($listener) {
 }
 
 Set-Location (Join-Path $repoRoot "example_project")
-Write-Host "Starting VorinPanel dev server on http://$hostAddress`:$port/admin/login/" -ForegroundColor Cyan
+Write-Host "Starting Vorin Admin dev server on http://$hostAddress`:$port/admin/login/" -ForegroundColor Cyan
 & $python $manage runserver "$hostAddress`:$port"

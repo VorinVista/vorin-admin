@@ -1,9 +1,3 @@
-CORE_APPS = (
-    "un" "fold",
-    "un" "fold.contrib.filters",
-)
+from vorin_admin.settings import CORE_APPS, install_vorin_config
 
-
-def install_vorin_config(namespace: dict[str, object], config: object) -> object:
-    namespace["UN" "FOLD"] = config
-    return config
+__all__ = ["CORE_APPS", "install_vorin_config"]

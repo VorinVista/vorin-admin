@@ -1,0 +1,13 @@
+{% load i18n %}
+<section class="vorin-filter-group" data-filter-title="{{ title }}">
+  <header class="vorin-filter-group__head">
+    <h3>{{ title }}</h3>
+  </header>
+  <div class="vorin-filter-group__choices">
+    {% for choice in choices %}
+      <a href="{{ choice.query_string|iriencode }}" class="vorin-filter-chip{% if choice.selected %} is-active{% endif %}">
+        {{ choice.display }}
+      </a>
+    {% endfor %}
+  </div>
+</section>

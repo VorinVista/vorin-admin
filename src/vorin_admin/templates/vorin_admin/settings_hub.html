@@ -3,13 +3,13 @@
 {% load i18n %}
 
 {% block content %}
-    <section class="vorin-hero mb-6 rounded-default overflow-hidden">
+    <section class="vorin-hero vorin-section-space">
         <div class="vorin-hero__inner">
             <div>
                 <p class="vorin-eyebrow">{{ panel_settings.site_subheader }}</p>
-                <h1 class="vorin-hero__title">{% trans "Control settings" %}</h1>
+                <h1 class="vorin-hero__title">{% trans "Admin settings" %}</h1>
                 <p class="vorin-hero__copy">
-                    {% trans "Shape the reusable Vorin admin workspace from one central hub, starting with users, permissions, navigation, and your installed project areas." %}
+                    {% trans "Manage the reusable admin workspace from one central hub, including users, permissions, navigation, and installed project areas." %}
                 </p>
             </div>
 
@@ -72,7 +72,7 @@
                         <div class="vorin-settings-link vorin-settings-link--disabled">
                             <div class="vorin-settings-link__body">
                                 <p class="vorin-settings-link__title">{% trans "More modules coming next" %}</p>
-                                <p class="vorin-settings-link__copy">{% trans "This section will grow as we wire more reusable admin preferences into VorinPanel." %}</p>
+                                <p class="vorin-settings-link__copy">{% trans "This section will grow as more reusable admin preferences are connected." %}</p>
                             </div>
                             <span class="material-symbols-outlined">schedule</span>
                         </div>

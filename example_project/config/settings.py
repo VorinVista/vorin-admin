@@ -1,8 +1,7 @@
 from pathlib import Path
 
-from django_vorin.settings import install_vorin_config
 from vorin_admin.config import build_vorin_settings
-from vorin_admin.settings import build_vorin_apps
+from vorin_admin.settings import build_vorin_apps, install_vorin_config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -11,36 +10,40 @@ DEBUG = True
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", "testserver"]
 
 VORIN_PANEL = {
-    "site_title": "VorinPanel Demo",
-    "site_header": "VorinPanel",
-    "site_subheader": "VorinVista Control System",
-    "site_version": "demo",
-    "dashboard_title": "VorinPanel Dashboard",
-    "site_url": "https://vorinvista.com",
-    "account_settings_path": "/admin/account/settings/",
-    "support_url": "mailto:support@vorinvista.com",
-    "support_email": "support@vorinvista.com",
-    "welcome_title": "VorinVista Admin Foundation",
+    "site_title": "Vorin Admin",
+    "site_header": "Vorin Admin",
+    "site_subheader": "Reusable admin workspace",
+    "site_version": "",
+    "dashboard_title": "Vorin Admin Dashboard",
+    "site_url": None,
+    "support_url": None,
+    "support_email": "",
+    "welcome_title": "Reusable admin foundation",
     "welcome_message": (
-        "This demo shows VorinPanel styled from the real VorinVista parent "
-        "project, using its logo system and orange-and-navy visual language."
+        "This demo shows the package running as a generic Django admin engine "
+        "with configurable modules, navigation, and workspace defaults."
     ),
-    "modules": {
-        "content": True,
-        "blog": True,
-        "seo": True,
-        "analytics": True,
-        "enquiries": True,
-        "media": True,
-        "clients": True,
-    },
-    "sidebar_links": [
+    "module_registry": [
         {
-            "title": "Showcase models",
-            "icon": "database",
-            "link": "/admin/",
-        }
+            "slug": "catalog",
+            "label": "Catalog",
+            "icon": "inventory_2",
+            "description": "Structured content and inventory workflows.",
+        },
+        {
+            "slug": "support",
+            "label": "Support",
+            "icon": "support_agent",
+            "description": "Customer or internal support operations.",
+        },
+        {
+            "slug": "reporting",
+            "label": "Reporting",
+            "icon": "monitoring",
+            "description": "Reporting and admin visibility.",
+        },
     ],
+    "sidebar_links": [],
 }
 
 INSTALLED_APPS = build_vorin_apps(project_apps=["showcase"])

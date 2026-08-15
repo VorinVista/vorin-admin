@@ -1,9 +1,9 @@
-from importlib import import_module
+from django.contrib.auth.forms import (
+    AdminPasswordChangeForm,
+    AdminUserCreationForm,
+    UserChangeForm,
+)
 
-_forms = import_module("un" "fold.forms")
-
-AdminPasswordChangeForm = _forms.AdminPasswordChangeForm
-UserChangeForm = _forms.UserChangeForm
-UserCreationForm = _forms.UserCreationForm
+UserCreationForm = AdminUserCreationForm
 
 __all__ = ["AdminPasswordChangeForm", "UserChangeForm", "UserCreationForm"]

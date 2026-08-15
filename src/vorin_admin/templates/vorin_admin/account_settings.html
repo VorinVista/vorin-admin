@@ -3,13 +3,13 @@
 {% load i18n %}
 
 {% block content %}
-    <section class="vorin-hero mb-6 rounded-default overflow-hidden">
+    <section class="vorin-hero vorin-section-space">
         <div class="vorin-hero__inner">
             <div>
                 <p class="vorin-eyebrow">{{ panel_settings.site_subheader }}</p>
                 <h1 class="vorin-hero__title">{% trans "Account settings" %}</h1>
                 <p class="vorin-hero__copy">
-                    {% trans "Manage your avatar, contact information, and operator profile from one reusable VorinPanel screen." %}
+                    {% trans "Manage your avatar, contact information, and operator profile from one reusable admin screen." %}
                 </p>
             </div>
 
@@ -26,7 +26,7 @@
         </div>
     </section>
 
-    <form method="post" enctype="multipart/form-data" class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+    <form method="post" enctype="multipart/form-data" class="vorin-account-grid">
         {% csrf_token %}
 
         <article class="vorin-surface">
@@ -89,7 +89,7 @@
             </div>
         </article>
 
-        <div class="lg:col-span-2 flex justify-end">
+        <div class="vorin-account-grid__actions">
             <button type="submit" class="vorin-primary-button">
                 {% trans "Save account settings" %}
             </button>

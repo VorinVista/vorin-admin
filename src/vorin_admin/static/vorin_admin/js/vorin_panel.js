@@ -177,11 +177,170 @@ function setupVorinThemeSwitch() {
 }
 
 function setupVorinCommandLauncher() {
-    document.querySelectorAll("[data-vorin-command-launch]").forEach((button) => {
-        button.addEventListener("click", () => {
-            window.dispatchEvent(new CustomEvent("opencommand"));
-            document.dispatchEvent(new CustomEvent("opencommand"));
+    const root = document.querySelector("[data-vorin-command]");
+    const input = document.querySelector("[data-vorin-command-input]");
+    const results = document.querySelector("[data-vorin-command-results]");
+    const empty = document.querySelector("[data-vorin-command-empty]");
+    const launchers = Array.from(document.querySelectorAll("[data-vorin-command-launch]"));
+    const closers = Array.from(document.querySelectorAll("[data-vorin-command-close]"));
+
+    if (!root || !input || !results) {
+        return;
+    }
+
+    const items = [];
+
+    document.querySelectorAll(".vorin-sidebar__link").forEach((link) => {
+        const title = link.querySelector(".truncate")?.textContent?.trim() || link.textContent.trim();
+        const href = link.getAttribute("href");
+
+        if (!title || !href) {
+            return;
+        }
+
+        items.push({
+            title,
+            href,
+            meta: "Navigation",
+            icon: link.querySelector(".material-symbols-outlined")?.textContent?.trim() || "link",
         });
+    });
+
+    document.querySelectorAll(".vorin-sidebar-children .vorin-sidebar__child-link").forEach((link) => {
+        const title = link.querySelector(".truncate")?.textContent?.trim() || link.textContent.trim();
+        const href = link.getAttribute("href");
+        const section = link.closest(".vorin-sidebar-details")?.querySelector(".vorin-sidebar-summary .truncate")?.textContent?.trim() || "Application";
+
+        if (!title || !href) {
+            return;
+        }
+
+        items.push({
+            title,
+            href,
+            meta: section,
+            icon: "subdirectory_arrow_right",
+        });
+    });
+
+    let activeIndex = -1;
+
+    const closeCommand = () => {
+        root.classList.remove("is-open");
+        document.body.classList.remove("vorin-command-open");
+        activeIndex = -1;
+    };
+
+    const openCommand = () => {
+        root.classList.add("is-open");
+        document.body.classList.add("vorin-command-open");
+        renderResults(input.value);
+        window.requestAnimationFrame(() => {
+            input.focus();
+            input.select();
+        });
+    };
+
+    function renderResults(query = "") {
+        const needle = query.trim().toLowerCase();
+        const filtered = !needle
+            ? items
+            : items.filter((item) =>
+                [item.title, item.meta, item.href]
+                    .filter(Boolean)
+                    .join(" ")
+                    .toLowerCase()
+                    .includes(needle)
+            );
+
+        results.innerHTML = "";
+        activeIndex = filtered.length ? 0 : -1;
+
+        filtered.slice(0, 18).forEach((item, index) => {
+            const link = document.createElement("a");
+            link.className = `vorin-command__result${index === activeIndex ? " is-active" : ""}`;
+            link.href = item.href;
+            link.innerHTML = `
+                <span class="vorin-command__result-icon material-symbols-outlined">${item.icon}</span>
+                <span class="vorin-command__result-body">
+                    <span class="vorin-command__result-title">${item.title}</span>
+                    <span class="vorin-command__result-meta">${item.meta}</span>
+                </span>
+                <span class="vorin-command__result-arrow material-symbols-outlined">arrow_outward</span>
+            `;
+            results.appendChild(link);
+        });
+
+        if (empty) {
+            empty.hidden = filtered.length > 0;
+        }
+    }
+
+    const syncActiveResult = (nextIndex) => {
+        const list = Array.from(results.querySelectorAll(".vorin-command__result"));
+
+        if (!list.length) {
+            activeIndex = -1;
+            return;
+        }
+
+        activeIndex = Math.max(0, Math.min(nextIndex, list.length - 1));
+        list.forEach((node, index) => {
+            node.classList.toggle("is-active", index === activeIndex);
+        });
+        list[activeIndex].scrollIntoView({ block: "nearest" });
+    };
+
+    launchers.forEach((button) => {
+        button.addEventListener("click", openCommand);
+    });
+
+    closers.forEach((button) => {
+        button.addEventListener("click", closeCommand);
+    });
+
+    input.addEventListener("input", () => {
+        renderResults(input.value);
+    });
+
+    input.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowDown") {
+            event.preventDefault();
+            syncActiveResult(activeIndex + 1);
+            return;
+        }
+
+        if (event.key === "ArrowUp") {
+            event.preventDefault();
+            syncActiveResult(activeIndex - 1);
+            return;
+        }
+
+        if (event.key === "Enter") {
+            const active = results.querySelector(".vorin-command__result.is-active");
+
+            if (active) {
+                active.click();
+            }
+        }
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if ((event.ctrlKey || event.metaKey) && event.key === "/") {
+            event.preventDefault();
+            openCommand();
+            return;
+        }
+
+        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+            event.preventDefault();
+            openCommand();
+            return;
+        }
+
+        if (event.key === "Escape" && root.classList.contains("is-open")) {
+            closeCommand();
+        }
     });
 }
 
@@ -192,7 +351,7 @@ function resolveVorinSidebarOpen() {
         return alpineState.sidebarOpen;
     }
 
-    if (window.innerWidth <= 1280) {
+    if (window.innerWidth <= 1024) {
         return false;
     }
 
@@ -1014,6 +1173,33 @@ function setupVorinThemeMediaWatcher() {
     });
 }
 
+function setupVorinBulkActions() {
+    document.querySelectorAll(".vorin-bulk-actions").forEach((root) => {
+        const select = root.querySelector('select[name="action"]');
+        const submit = root.querySelector(".vorin-bulk-actions__submit");
+
+        if (!select || !submit) {
+            return;
+        }
+
+        const placeholder = select.querySelector('option[value=""]');
+
+        if (
+            placeholder &&
+            (!placeholder.textContent.trim() || placeholder.textContent.trim() === "---------")
+        ) {
+            placeholder.textContent = "Choose action";
+        }
+
+        const syncState = () => {
+            submit.disabled = !select.value;
+        };
+
+        select.addEventListener("change", syncState);
+        syncState();
+    });
+}
+
 window.addEventListener("DOMContentLoaded", () => {
     cleanupVorinBrowserState();
     setupVorinThemeSwitch();
@@ -1026,18 +1212,22 @@ window.addEventListener("DOMContentLoaded", () => {
     setupVorinMediaCards();
     setupVorinAutocompleteFields();
     setupVorinPlainSelects();
+    setupVorinBulkActions();
     enhanceVorinSplitDateTimeFields();
     setupVorinDateTimeInputs();
     setupVorinThemeMediaWatcher();
     setupVorinEnhancementObserver();
     window.setTimeout(setupVorinAutocompleteFields, 120);
     window.setTimeout(setupVorinPlainSelects, 120);
+    window.setTimeout(setupVorinBulkActions, 120);
     window.setTimeout(setupVorinAutocompleteFields, 500);
     window.setTimeout(setupVorinPlainSelects, 500);
+    window.setTimeout(setupVorinBulkActions, 500);
     window.setTimeout(enhanceVorinSplitDateTimeFields, 120);
     window.setTimeout(setupVorinDateTimeInputs, 120);
     window.setTimeout(setupVorinAutocompleteFields, 1000);
     window.setTimeout(setupVorinPlainSelects, 1000);
+    window.setTimeout(setupVorinBulkActions, 1000);
     window.setTimeout(enhanceVorinSplitDateTimeFields, 500);
     window.setTimeout(setupVorinDateTimeInputs, 500);
 });
@@ -1045,6 +1235,7 @@ window.addEventListener("DOMContentLoaded", () => {
 window.addEventListener("load", () => {
     setupVorinAutocompleteFields();
     setupVorinPlainSelects();
+    setupVorinBulkActions();
     enhanceVorinSplitDateTimeFields();
     setupVorinDateTimeInputs();
     setupVorinEnhancementObserver();

@@ -1,0 +1,75 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block bodyclass %}{{ block.super }} app-index{% endblock %}
+{% block content_title %}{% endblock %}
+
+{% block content %}
+    <div id="content-main" class="vorin-app-index">
+        {% for app in app_list %}
+            <section class="vorin-surface vorin-app-index__intro">
+                <div class="vorin-app-index__intro-copy">
+                    <p class="vorin-eyebrow">{{ panel_settings.site_subheader|default:_("Admin workspace") }}</p>
+                    <h1 class="vorin-app-index__title">{{ app.name }}</h1>
+                    <p class="vorin-muted">
+                        {% trans "Browse the registered admin models for this application and jump directly into records, creation flows, and management screens." %}
+                    </p>
+                </div>
+            </section>
+
+            <section class="vorin-app-index__grid">
+                {% for model in app.models %}
+                    <article class="vorin-surface vorin-app-index__card">
+                        <div class="vorin-app-index__card-copy">
+                            <p class="vorin-eyebrow">{% trans "Registered model" %}</p>
+                            <h3 class="vorin-heading">{{ model.name }}</h3>
+                            <p class="vorin-muted">
+                                {% if model.admin_url and model.add_url %}
+                                    {% trans "Open the model list or create a new record directly from this workspace." %}
+                                {% elif model.admin_url %}
+                                    {% trans "Open the available records and manage the content for this model." %}
+                                {% elif model.add_url %}
+                                    {% trans "Create a new record for this model from the reusable admin engine." %}
+                                {% else %}
+                                    {% trans "This model is registered in the workspace and can be exposed here when actions become available." %}
+                                {% endif %}
+                            </p>
+                        </div>
+
+                        <div class="vorin-app-index__actions">
+                            {% if model.admin_url %}
+                                <a class="vorin-app-index__link" href="{{ model.admin_url }}">{% trans "Open list" %}</a>
+                            {% endif %}
+                            {% if model.add_url %}
+                                <a class="vorin-app-index__link vorin-app-index__link--accent" href="{{ model.add_url }}">{% trans "Add record" %}</a>
+                            {% endif %}
+                            {% if not model.admin_url and not model.add_url %}
+                                <span class="vorin-app-index__empty">{% trans "No direct actions available yet." %}</span>
+                            {% endif %}
+                        </div>
+                    </article>
+                {% empty %}
+                    <article class="vorin-surface vorin-app-index__card">
+                        <div class="vorin-app-index__card-copy">
+                            <p class="vorin-eyebrow">{% trans "No models" %}</p>
+                            <h3 class="vorin-heading">{% trans "Nothing registered yet" %}</h3>
+                            <p class="vorin-muted">
+                                {% trans "Add models to this application and they will appear here automatically inside the admin engine." %}
+                            </p>
+                        </div>
+                    </article>
+                {% endfor %}
+            </section>
+        {% empty %}
+            <section class="vorin-surface vorin-app-index__intro">
+                <div class="vorin-app-index__intro-copy">
+                    <p class="vorin-eyebrow">{% trans "Admin workspace" %}</p>
+                    <h2 class="vorin-heading">{% trans "No applications available" %}</h2>
+                    <p class="vorin-muted">
+                        {% trans "Registered applications will appear here automatically once the workspace loads real admin modules." %}
+                    </p>
+                </div>
+            </section>
+        {% endfor %}
+    </div>
+{% endblock %}

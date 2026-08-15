@@ -1,0 +1,34 @@
+{% load i18n %}
+
+<div class="vorin-command" data-vorin-command>
+    <button type="button" class="vorin-command__backdrop" data-vorin-command-close aria-label="{% trans 'Close search' %}"></button>
+
+    <div class="vorin-command__dialog" role="dialog" aria-modal="true" aria-labelledby="vorin-command-title">
+        <div class="vorin-command__panel">
+            <div class="vorin-command__header">
+                <div>
+                    <p class="vorin-eyebrow">{% trans "Navigation search" %}</p>
+                    <h2 id="vorin-command-title" class="vorin-command__title">{% trans "Search apps, models and destinations" %}</h2>
+                </div>
+
+                <button type="button" class="vorin-command__close" data-vorin-command-close aria-label="{% trans 'Close search' %}">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <div class="vorin-command__searchbar">
+                <span class="material-symbols-outlined">manage_search</span>
+                <input
+                    id="vorin-command-input"
+                    type="search"
+                    class="vorin-command__input"
+                    data-vorin-command-input
+                    placeholder="{% trans 'Type to filter admin destinations...' %}"
+                    aria-label="{% trans 'Search admin destinations' %}">
+            </div>
+
+            <div class="vorin-command__results" data-vorin-command-results></div>
+            <p class="vorin-command__empty" data-vorin-command-empty hidden>{% trans "No matching destinations found." %}</p>
+        </div>
+    </div>
+</div>

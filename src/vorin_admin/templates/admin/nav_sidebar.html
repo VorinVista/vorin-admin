@@ -1,0 +1,99 @@
+{% load i18n static %}
+
+<aside id="nav-sidebar" class="vorin-sidebar" aria-label="{% trans 'Sidebar' %}">
+    <div id="nav-sidebar-inner" class="vorin-sidebar__inner">
+        <div class="vorin-sidebar__brand">
+            <a class="vorin-sidebar__brand-link" href="{% url 'admin:index' %}">
+                <img
+                    src="{% static panel_settings.branding.logo.dark %}"
+                    alt="{{ panel_settings.site_title|default:site_title }}"
+                    class="vorin-sidebar__brand-logo">
+            </a>
+        </div>
+
+        <div class="vorin-sidebar__groups">
+            {% if sidebar_navigation %}
+                {% for group in sidebar_navigation %}
+                    {% if group.items %}
+                        <section class="vorin-sidebar__group">
+                            {% if group.separator %}
+                                <div class="vorin-sidebar__separator"></div>
+                            {% endif %}
+
+                            {% if group.title %}
+                                <h2 class="vorin-sidebar__group-title">{{ group.title }}</h2>
+                            {% endif %}
+
+                            <ol class="vorin-sidebar__list">
+                                {% for item in group.items %}
+                                    {% if item.has_permission %}
+                                        <li class="vorin-sidebar__item">
+                                            {% if item.children %}
+                                                <details class="vorin-sidebar-details"{% if item.active %} open{% endif %}>
+                                                    <summary class="vorin-sidebar-summary{% if item.active %} is-active{% endif %}">
+                                                        <span class="vorin-sidebar-summary__main">
+                                                            {% if item.icon %}
+                                                                <span class="material-symbols-outlined">{{ item.icon }}</span>
+                                                            {% endif %}
+                                                            <span class="truncate">{{ item.title|safe }}</span>
+                                                        </span>
+                                                        <span class="vorin-sidebar-summary__meta">
+                                                            {% if item.badge %}
+                                                                <span class="vorin-sidebar__badge">{{ item.badge }}</span>
+                                                            {% endif %}
+                                                            <span class="material-symbols-outlined vorin-sidebar-summary__chevron">expand_more</span>
+                                                        </span>
+                                                    </summary>
+
+                                                    <ol class="vorin-sidebar-children">
+                                                        {% for child in item.children %}
+                                                            {% if child.has_permission %}
+                                                                <li>
+                                                                    <a href="{{ child.link }}" class="vorin-sidebar__child-link{% if child.active %} is-active{% endif %}">
+                                                                        <span class="material-symbols-outlined">subdirectory_arrow_right</span>
+                                                                        <span class="truncate">{{ child.title|safe }}</span>
+                                                                    </a>
+                                                                </li>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </ol>
+                                                </details>
+                                            {% else %}
+                                                <a href="{{ item.link }}" class="vorin-sidebar__link{% if item.active %} is-active{% endif %}">
+                                                    {% if item.icon %}
+                                                        <span class="material-symbols-outlined">{{ item.icon }}</span>
+                                                    {% endif %}
+                                                    <span class="truncate">{{ item.title|safe }}</span>
+                                                    {% if item.badge %}
+                                                        <span class="vorin-sidebar__badge">{{ item.badge }}</span>
+                                                    {% endif %}
+                                                </a>
+                                            {% endif %}
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ol>
+                        </section>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <p class="vorin-sidebar__empty">{% trans "No navigation items available." %}</p>
+            {% endif %}
+        </div>
+
+        <div class="vorin-sidebar__footer">
+            <a href="{% url 'vorin_admin:settings_hub' %}" class="vorin-sidebar-user__link vorin-sidebar-user__link--hub">
+                <span class="vorin-sidebar-user__icon">
+                    <span class="material-symbols-outlined">settings</span>
+                </span>
+                <div class="vorin-sidebar-user__meta">
+                    <div class="vorin-sidebar-user__name">{% trans "Control settings" %}</div>
+                    <div class="vorin-sidebar-user__subline">{% trans "Workspace, team, permissions" %}</div>
+                    {% if panel_settings.site_version %}
+                        <div class="vorin-sidebar-user__subline">{{ panel_settings.site_title }} - {{ panel_settings.site_version }}</div>
+                    {% endif %}
+                </div>
+            </a>
+        </div>
+    </div>
+</aside>

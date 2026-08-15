@@ -4,14 +4,14 @@ import csv
 from datetime import datetime
 
 from django.contrib import admin
-from django.contrib.admin.sites import NotRegistered
+from django.contrib.admin import ModelAdmin, StackedInline, TabularInline
 from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.forms import AdminPasswordChangeForm, AdminUserCreationForm, UserChangeForm
 from django.contrib.auth.models import Group, User
+from django.contrib.admin.sites import NotRegistered
 from django.http import HttpRequest, HttpResponse
 
-from django_vorin.admin import ModelAdmin, StackedInline, TabularInline
-from django_vorin.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 from vorin_admin.models import VorinUserSettings
 
 
@@ -60,7 +60,7 @@ class VorinUserSettingsInline(VorinStackedInline):
     can_delete = False
     extra = 0
     max_num = 1
-    verbose_name_plural = "Vorin panel settings"
+    verbose_name_plural = "Admin profile settings"
     fields = ("avatar", "job_title", "phone", "bio")
 
 
@@ -79,7 +79,7 @@ except NotRegistered:
 @admin.register(User)
 class VorinUserAdmin(BaseUserAdmin, ModelAdmin):
     form = UserChangeForm
-    add_form = UserCreationForm
+    add_form = AdminUserCreationForm
     change_password_form = AdminPasswordChangeForm
     list_display = ("username", "email", "first_name", "last_name", "is_staff")
     search_fields = ("username", "email", "first_name", "last_name")

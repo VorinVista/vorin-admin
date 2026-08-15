@@ -1,6 +1,6 @@
 from collections.abc import Iterable
 
-from django_vorin.settings import CORE_APPS
+CORE_APPS: tuple[str, ...] = ()
 
 
 def build_vorin_apps(
@@ -36,3 +36,8 @@ def build_vorin_apps(
             unique_apps.append(app)
 
     return unique_apps
+
+
+def install_vorin_config(namespace: dict[str, object], config: object) -> object:
+    namespace["VORIN_ADMIN"] = config
+    return config

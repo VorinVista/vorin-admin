@@ -76,7 +76,7 @@ def _build_settings_sections(request, panel: dict[str, object]) -> list[dict[str
         {
             "eyebrow": "Workspace",
             "title": "Core admin setup",
-            "description": "The settings your operators usually need first when shaping a new back-office.",
+            "description": "Common settings for team access, profile tools, and day-to-day admin management.",
             "icon": "space_dashboard",
             "items": [
                 {
@@ -86,7 +86,7 @@ def _build_settings_sections(request, panel: dict[str, object]) -> list[dict[str
                 },
                 {
                     "title": "Team members",
-                    "description": "Manage staff accounts that can access this control room.",
+                    "description": "Manage staff accounts that can access this admin workspace.",
                     "link": _safe_reverse("admin:auth_user_changelist"),
                 },
                 {
@@ -97,9 +97,9 @@ def _build_settings_sections(request, panel: dict[str, object]) -> list[dict[str
             ],
         },
         {
-            "eyebrow": "Experience",
-            "title": "Environment and navigation",
-            "description": "Shortcuts for the dashboard shell, public site, and support paths your team uses often.",
+            "eyebrow": "Navigation",
+            "title": "Environment and shortcuts",
+            "description": "Useful entry points for the dashboard shell, public site, and optional support destinations.",
             "icon": "tune",
             "items": [
                 {
@@ -122,8 +122,8 @@ def _build_settings_sections(request, panel: dict[str, object]) -> list[dict[str
             ],
         },
         {
-            "eyebrow": "Installed areas",
-            "title": "Project modules",
+            "eyebrow": "Registry",
+            "title": "Installed modules",
             "description": "Registered admin areas detected from the live Django registry.",
             "icon": "widgets",
             "items": installed_areas[:6],
@@ -141,7 +141,7 @@ def settings_hub_view(request):
         **admin.site.each_context(request),
         "panel_settings": panel,
         "current_year": timezone.now().year,
-        "title": "Control settings",
+        "title": "Admin settings",
         "subtitle": "Workspace, team, navigation, and reusable admin setup",
         "settings_sections": _build_settings_sections(request, panel),
         "settings_stats": [
@@ -187,7 +187,7 @@ def account_settings_view(request):
         if user_form.is_valid() and settings_form.is_valid():
             user_form.save()
             settings_form.save()
-            messages.success(request, "Your VorinPanel account settings were updated.")
+            messages.success(request, "Your admin account settings were updated.")
             return redirect("vorin_admin:account_settings")
     else:
         user_form = VorinAccountUserForm(instance=request.user, prefix="user")

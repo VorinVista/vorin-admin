@@ -1,4 +1,4 @@
-{% load i18n static %}
+{% load i18n static vorin %}
 {% now "Y" as current_year %}
 <!doctype html>
 <html lang="{{ LANGUAGE_CODE|default:'en' }}">
@@ -6,21 +6,23 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ title }} | {{ site_title|default:panel_settings.site_title }}</title>
-    <link rel="icon" type="image/png" href="{% static 'vorin_admin/branding/vv-logo.png' %}">
-    <link rel="stylesheet" href="{% static 'vorin_admin/css/vorin_panel.css' %}">
+    <link rel="icon" type="image/png" href="{% versioned_static panel_settings.branding.favicon %}">
+    <link rel="stylesheet" href="{% versioned_static 'vorin_admin/css/vorin_panel.css' %}">
     {{ form.media }}
 </head>
 <body class="vorin-login-page">
     <div class="vorin-login-shell">
         <section class="vorin-login-panel">
-            <a class="vorin-login-panel__return" href="{{ site_url|default:panel_settings.site_url|default:'/' }}">
-                {% translate "Return to site" %}
-            </a>
+            {% if site_url|default:panel_settings.site_url %}
+                <a class="vorin-login-panel__return" href="{{ site_url|default:panel_settings.site_url }}">
+                    {% translate "Return to site" %}
+                </a>
+            {% endif %}
 
             <div class="vorin-login-panel__card">
                 <div class="vorin-login-panel__brand">
                     <img
-                        src="{% static 'vorin_admin/branding/logo-dark.png' %}"
+                        src="{% static panel_settings.branding.logo.dark %}"
                         alt="{{ panel_settings.site_title }}"
                         class="vorin-login-panel__logo">
                     <p class="vorin-eyebrow">{{ panel_settings.site_subheader }}</p>
@@ -108,22 +110,22 @@
             </div>
         </section>
 
-        <aside class="vorin-login-showcase" aria-label="{% translate 'VorinVista brand panel' %}">
+        <aside class="vorin-login-showcase" aria-label="{% translate 'Admin introduction panel' %}">
             <div class="vorin-login-showcase__content">
                 <div class="vorin-login-showcase__logo-wrap">
                     <img
-                        src="{% static 'vorin_admin/branding/vv-logo.png' %}"
+                        src="{% static panel_settings.branding.icon.dark %}"
                         alt="{{ panel_settings.site_title }}"
                         class="vorin-login-showcase__mark">
                 </div>
 
                 <div>
-                    <p class="vorin-eyebrow">{% translate "VorinVista Control Room" %}</p>
+                    <p class="vorin-eyebrow">{% translate "Reusable admin workspace" %}</p>
                     <h2 class="vorin-login-showcase__title">
-                        {% translate "A polished admin surface for content, leads, billing, and client operations." %}
+                        {% translate "A reusable admin surface for operations, content, data entry, and internal workflows." %}
                     </h2>
                     <p class="vorin-login-showcase__copy">
-                        {% translate "Built as the reusable back-office layer for every future Django project in the Vorin ecosystem." %}
+                        {% translate "Designed to act as a configurable engine for layout, navigation, profile tools, and module registration across Django projects." %}
                     </p>
                 </div>
 
@@ -134,7 +136,7 @@
                     </article>
                     <article class="vorin-login-metric">
                         <span class="vorin-login-metric__label">{% translate "Support" %}</span>
-                        <strong>{{ panel_settings.support_email }}</strong>
+                        <strong>{{ panel_settings.support_email|default:"-" }}</strong>
                     </article>
                     <article class="vorin-login-metric">
                         <span class="vorin-login-metric__label">{% translate "Brand" %}</span>

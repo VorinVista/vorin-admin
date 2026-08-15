@@ -1,76 +1,103 @@
-{% load i18n vorin %}
+{% load i18n %}
 
-<div class="vorin-topbar border-b border-base-200 mb-4 px-4 z-40 dark:border-base-800 {% element_classes 'header' %}">
-    <div class="{% if not cl.model_admin.list_fullwidth and is_fullwidth != "1" %}container{% endif %} flex items-center h-16 mx-auto py-3 {% element_classes 'header_inner' %}">
-        <div id="header-inner" class="flex gap-4 items-center relative w-full">
-            <div class="flex gap-3 items-center min-w-0 grow">
-                {% if is_nav_sidebar_enabled and not is_popup %}
-                    <button type="button" class="vorin-topbar__icon" data-vorin-sidebar-toggle aria-label="{% trans 'Toggle sidebar' %}">
-                        <span class="material-symbols-outlined">menu</span>
-                    </button>
-                {% endif %}
+<div class="vorin-topbar">
+    <div class="vorin-topbar__inner">
+        <div class="vorin-topbar__group vorin-topbar__group--lead">
+            {% if is_nav_sidebar_enabled and not is_popup %}
+                <button type="button" class="vorin-topbar__icon" data-vorin-sidebar-toggle aria-label="{% trans 'Toggle sidebar' %}">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+            {% endif %}
 
-                {% if panel_settings.show_search %}
-                    <button type="button" class="vorin-topbar__search" data-vorin-command-launch>
-                        <span class="material-symbols-outlined">manage_search</span>
-                        <span class="vorin-topbar__search-label">{% trans "Search" %}</span>
-                        <span class="vorin-topbar__search-shortcut">Ctrl+/</span>
-                    </button>
-                {% endif %}
-            </div>
-
-            {% if has_permission %}
-                <div class="flex gap-3 items-center shrink-0">
-                    {% action_list %}
-
-                    {% if panel_settings.show_theme_switch %}
-                        {% include "vorin_admin/includes/theme_switch_dropdown.html" %}
-                    {% endif %}
-
-                    <details class="vorin-profile-shell" data-vorin-menu>
-                        <summary class="vorin-topbar__profile">
-                            {% include "vorin_admin/includes/avatar.html" with user=request.user size="sm" circle=True %}
-                            <span class="vorin-topbar__profile-dot"></span>
-                        </summary>
-
-                        <div class="vorin-profile-menu">
-                            <div class="vorin-profile-menu__head">
-                                {% include "vorin_admin/includes/avatar.html" with user=request.user circle=True %}
-                                <div class="min-w-0">
-                                    <p class="vorin-profile-menu__name">
-                                        {{ request.user.get_full_name|default:request.user.get_username }}
-                                    </p>
-                                    <p class="vorin-profile-menu__role">
-                                        {{ request.user.vorin_role_label }}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="vorin-profile-menu__links">
-                                <a href="{{ panel_settings.account_settings_path }}">
-                                    <span class="material-symbols-outlined">manage_accounts</span>
-                                    <span>{% trans "Edit Profile & Avatar" %}</span>
-                                </a>
-
-                                {% if request.user.has_usable_password %}
-                                    <a href="{% url 'admin:password_change' %}">
-                                        <span class="material-symbols-outlined">key</span>
-                                        <span>{% trans "Change Password" %}</span>
-                                    </a>
-                                {% endif %}
-
-                                <form method="post" action="{% url 'admin:logout' %}">
-                                    {% csrf_token %}
-                                    <button type="submit">
-                                        <span class="material-symbols-outlined">logout</span>
-                                        <span>{% trans "Log Out" %}</span>
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </details>
-                </div>
+            {% if panel_settings.show_search %}
+                <button type="button" class="vorin-topbar__search" data-vorin-command-launch>
+                    <span class="material-symbols-outlined">manage_search</span>
+                    <span class="vorin-topbar__search-label">{% trans "Search" %}</span>
+                    <span class="vorin-topbar__search-shortcut">Ctrl+/</span>
+                </button>
             {% endif %}
         </div>
+
+        {% if has_permission %}
+            <div class="vorin-topbar__group vorin-topbar__group--actions">
+                {% if site_url %}
+                    <a href="{{ site_url }}" target="_blank" rel="noreferrer" class="vorin-topbar__icon" aria-label="{% trans 'View site' %}">
+                        <span class="material-symbols-outlined">computer</span>
+                    </a>
+                {% endif %}
+
+                {% if panel_settings.show_theme_switch %}
+                    {% include "vorin_admin/includes/theme_switch_dropdown.html" %}
+                {% endif %}
+
+                <details class="vorin-profile-shell" data-vorin-menu>
+                    <summary class="vorin-topbar__profile" aria-label="{% trans 'Account menu' %}">
+                        {% include "vorin_admin/includes/avatar.html" with user=request.user size="sm" circle=True %}
+                        <span class="vorin-topbar__profile-dot"></span>
+                    </summary>
+
+                    <div class="vorin-profile-menu">
+                        <div class="vorin-profile-menu__head">
+                            {% include "vorin_admin/includes/avatar.html" with user=request.user circle=True %}
+                            <div class="min-w-0">
+                                <p class="vorin-profile-menu__name">{{ request.user.get_full_name|default:request.user.get_username }}</p>
+                                <p class="vorin-profile-menu__role">{{ request.user.vorin_role_label }}</p>
+                            </div>
+                        </div>
+
+                        <div class="vorin-profile-menu__links">
+                            <a href="{% url 'vorin_admin:settings_hub' %}">
+                                <span class="material-symbols-outlined">space_dashboard</span>
+                                <span>{% trans "Control settings" %}</span>
+                            </a>
+
+                            <a href="{% if panel_settings.account_settings_path %}{{ panel_settings.account_settings_path }}{% else %}{% url 'vorin_admin:account_settings' %}{% endif %}">
+                                <span class="material-symbols-outlined">manage_accounts</span>
+                                <span>{% trans "Edit Profile & Avatar" %}</span>
+                            </a>
+
+                            <a href="{% url 'admin:auth_user_changelist' %}">
+                                <span class="material-symbols-outlined">group</span>
+                                <span>{% trans "Team users" %}</span>
+                            </a>
+
+                            <a href="{% url 'admin:auth_group_changelist' %}">
+                                <span class="material-symbols-outlined">admin_panel_settings</span>
+                                <span>{% trans "Roles and groups" %}</span>
+                            </a>
+
+                            {% if request.user.has_usable_password %}
+                                <a href="{% url 'admin:password_change' %}">
+                                    <span class="material-symbols-outlined">key</span>
+                                    <span>{% trans "Change Password" %}</span>
+                                </a>
+                            {% endif %}
+
+                            {% if site_url %}
+                                <a href="{{ site_url }}" target="_blank" rel="noreferrer">
+                                    <span class="material-symbols-outlined">open_in_new</span>
+                                    <span>{% trans "View site" %}</span>
+                                </a>
+                            {% endif %}
+
+                            {% if panel_settings.support_url %}
+                                <a href="{{ panel_settings.support_url }}">
+                                    <span class="material-symbols-outlined">support_agent</span>
+                                    <span>{% trans "Support" %}</span>
+                                </a>
+                            {% endif %}
+
+                            <form method="post" action="{% url 'admin:logout' %}">
+                                {% csrf_token %}
+                                <button type="submit">
+                                    <span class="material-symbols-outlined">logout</span>
+                                    <span>{% trans "Log Out" %}</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </details>
+            </div>
+        {% endif %}
     </div>
 </div>

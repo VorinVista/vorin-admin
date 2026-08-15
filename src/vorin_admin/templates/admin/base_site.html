@@ -1,0 +1,34 @@
+{% extends "admin/base.html" %}
+
+{% load i18n static %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ panel_settings.site_title|default:site_title }}{% endblock %}
+
+{% block bodyclass %}{{ block.super }} vorin-admin-shell{% endblock %}
+
+{% block branding %}
+    <div class="vorin-branding">
+        <a class="vorin-branding__link" href="{% url 'admin:index' %}">
+            <img
+                src="{% static panel_settings.branding.logo.dark %}"
+                alt="{{ panel_settings.site_title|default:site_title }}"
+                class="vorin-branding__logo">
+            <span class="vorin-branding__copy">
+                <strong>{{ panel_settings.site_header|default:site_header }}</strong>
+                {% if panel_settings.site_subheader %}
+                    <small>{{ panel_settings.site_subheader }}</small>
+                {% endif %}
+            </span>
+        </a>
+    </div>
+{% endblock %}
+
+{% block userlinks %}
+    <a href="{% url 'vorin_admin:settings_hub' %}">{% trans "Admin settings" %}</a> /
+    <a href="{% url 'vorin_admin:account_settings' %}">{% trans "Profile" %}</a> /
+    {{ block.super }}
+{% endblock %}
+
+{% block footer %}
+    {% include "vorin_admin/includes/footer.html" %}
+{% endblock %}
