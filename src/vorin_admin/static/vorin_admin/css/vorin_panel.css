@@ -5235,3 +5235,323 @@ body.vorin-admin-shell #nav-filter::placeholder {
     background: #0d1831 !important;
 }
 
+/* Generic Django admin control hardening. Keep this block last. */
+body.vorin-admin-shell.change-form #content-main .form-row {
+    border-bottom: 0 !important;
+    border-top: 1px solid rgba(1, 21, 56, 0.08);
+    box-sizing: border-box;
+    padding: clamp(0.95rem, 1.6vw, 1.2rem) clamp(1rem, 1.8vw, 1.35rem) !important;
+}
+
+body.vorin-admin-shell.change-form #content-main .module .form-row:first-of-type,
+body.vorin-admin-shell.change-form #content-main fieldset.module .form-row:first-of-type {
+    border-top: 0;
+}
+
+html.dark body.vorin-admin-shell.change-form #content-main .form-row {
+    border-top-color: rgba(217, 226, 236, 0.1);
+}
+
+body.vorin-admin-shell.change-form #content-main .form-row .flex-container {
+    align-items: center;
+    display: grid;
+    gap: 0.85rem 1.25rem;
+    grid-template-columns: minmax(9.5rem, 12.5rem) minmax(0, 1fr);
+    min-width: 0;
+    width: 100%;
+}
+
+body.vorin-admin-shell.change-form #content-main .form-row:has(textarea) .flex-container,
+body.vorin-admin-shell.change-form #content-main .form-row:has(.datetime) .flex-container {
+    align-items: start;
+}
+
+body.vorin-admin-shell.change-form #content-main .form-row .flex-container > label {
+    align-self: center;
+    margin: 0;
+    padding: 0 !important;
+}
+
+body.vorin-admin-shell.change-form #content-main .form-row:has(textarea) .flex-container > label,
+body.vorin-admin-shell.change-form #content-main .form-row:has(.datetime) .flex-container > label {
+    align-self: start;
+    padding-top: 0.8rem !important;
+}
+
+body.vorin-admin-shell.change-form #content-main input[type="text"],
+body.vorin-admin-shell.change-form #content-main input[type="email"],
+body.vorin-admin-shell.change-form #content-main input[type="password"],
+body.vorin-admin-shell.change-form #content-main input[type="url"],
+body.vorin-admin-shell.change-form #content-main input[type="number"],
+body.vorin-admin-shell.change-form #content-main input[type="date"],
+body.vorin-admin-shell.change-form #content-main input[type="time"],
+body.vorin-admin-shell.change-form #content-main textarea,
+body.vorin-admin-shell.change-form #content-main select {
+    border-radius: 0.95rem;
+    box-sizing: border-box;
+    line-height: 1.35;
+    min-height: 3rem;
+    padding: 0.8rem 1rem;
+}
+
+body.vorin-admin-shell.change-form #content-main .form-row input[type="text"],
+body.vorin-admin-shell.change-form #content-main .form-row input[type="email"],
+body.vorin-admin-shell.change-form #content-main .form-row input[type="password"],
+body.vorin-admin-shell.change-form #content-main .form-row input[type="url"],
+body.vorin-admin-shell.change-form #content-main .form-row input[type="number"],
+body.vorin-admin-shell.change-form #content-main .form-row textarea,
+body.vorin-admin-shell.change-form #content-main .form-row select,
+body.vorin-admin-shell.change-form #content-main .form-row .select2-container {
+    max-width: min(100%, 52rem);
+}
+
+body.vorin-admin-shell.change-form #content-main textarea {
+    line-height: 1.55;
+}
+
+body.vorin-admin-shell.change-form #content-main p.date,
+body.vorin-admin-shell.change-form #content-main p.time,
+body.vorin-admin-shell.change-form #content-main .vorin-datetime-row__control {
+    position: relative;
+}
+
+body.vorin-admin-shell.change-form #content-main p.date,
+body.vorin-admin-shell.change-form #content-main p.time {
+    margin: 0;
+    max-width: 18rem;
+    padding: 0;
+    width: min(100%, 18rem);
+}
+
+body.vorin-admin-shell.change-form #content-main p.datetime {
+    display: block !important;
+    margin: 0;
+    max-width: 34rem;
+    width: min(100%, 34rem);
+}
+
+body.vorin-admin-shell.change-form #content-main input.vDateField,
+body.vorin-admin-shell.change-form #content-main input.vTimeField,
+body.vorin-admin-shell.change-form #content-main input.vorin-admin-picker-input {
+    max-width: 18rem;
+    padding-right: 3.45rem !important;
+}
+
+body.vorin-admin-shell.change-form #content-main .vorin-datetime-row__control input.vDateField,
+body.vorin-admin-shell.change-form #content-main .vorin-datetime-row__control input.vTimeField {
+    max-width: none;
+    width: 100%;
+}
+
+body.vorin-admin-shell.change-form #content-main p.date > .datetimeshortcuts,
+body.vorin-admin-shell.change-form #content-main p.time > .datetimeshortcuts,
+body.vorin-admin-shell.change-form #content-main .vorin-datetime-row__control > .datetimeshortcuts:not(.vorin-time-shortcuts) {
+    align-items: center !important;
+    display: flex !important;
+    font-size: 0 !important;
+    gap: 0 !important;
+    line-height: 0 !important;
+    margin: 0 !important;
+    position: absolute !important;
+    right: 0.55rem !important;
+    top: 1.5rem !important;
+    transform: translateY(-50%) !important;
+    z-index: 4;
+}
+
+body.vorin-admin-shell.change-form #content-main .vorin-datetime-row__control > .datetimeshortcuts:not(.vorin-time-shortcuts) {
+    top: 50% !important;
+}
+
+body.vorin-admin-shell.change-form #content-main p.date > .datetimeshortcuts > a:not(.vorin-datetimeshortcuts__link--picker),
+body.vorin-admin-shell.change-form #content-main p.time > .datetimeshortcuts > a:not(.vorin-datetimeshortcuts__link--picker),
+body.vorin-admin-shell.change-form #content-main .vorin-datetime-row__control > .datetimeshortcuts > a:not(.vorin-datetimeshortcuts__link--picker) {
+    display: none !important;
+}
+
+body.vorin-admin-shell.change-form #content-main p.date > .datetimeshortcuts::before,
+body.vorin-admin-shell.change-form #content-main p.time > .datetimeshortcuts::before,
+body.vorin-admin-shell.change-form #content-main .vorin-datetime-row__control > .datetimeshortcuts::before {
+    content: none !important;
+}
+
+body.vorin-admin-shell .vorin-datetime-stack {
+    display: grid;
+    gap: 0.85rem;
+    grid-template-columns: repeat(2, minmax(12rem, 1fr));
+    max-width: 34rem;
+    width: 100%;
+}
+
+body.vorin-admin-shell .vorin-datetime-row__control {
+    display: block;
+    min-width: 0;
+    position: relative;
+    width: 100%;
+}
+
+body.vorin-admin-shell .vorin-time-source-input,
+body.vorin-admin-shell .vorin-file-control__native {
+    display: none !important;
+}
+
+body.vorin-admin-shell .vorin-time-select {
+    cursor: pointer;
+    max-width: none !important;
+    width: 100%;
+}
+
+body.vorin-admin-shell .vorin-time-shortcuts {
+    display: none !important;
+}
+
+body.vorin-admin-shell .vorin-file-control {
+    align-items: center !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    cursor: pointer;
+    display: inline-flex !important;
+    gap: 0.75rem;
+    min-height: 0;
+    padding: 0 !important;
+    width: auto !important;
+}
+
+body.vorin-admin-shell .vorin-file-control__button {
+    align-items: center;
+    background: var(--vorin-hero-end);
+    border-radius: 999px;
+    color: #ffffff;
+    display: inline-flex;
+    flex: 0 0 auto;
+    font-family: var(--vorin-heading-font);
+    font-size: 0.82rem;
+    font-weight: 800;
+    line-height: 1;
+    min-height: 2.65rem;
+    padding: 0.78rem 1rem;
+}
+
+body.vorin-admin-shell .vorin-file-control__name {
+    color: #66788f;
+    font-size: 0.88rem;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body.vorin-admin-shell .vorin-file-control.is-empty .vorin-file-control__name {
+    display: none;
+}
+
+html.dark body.vorin-admin-shell .vorin-file-control__button {
+    background: rgba(11, 64, 156, 0.72);
+    color: #f8fbff;
+}
+
+html.dark body.vorin-admin-shell .vorin-file-control__name {
+    color: rgba(217, 226, 236, 0.72);
+}
+
+body.vorin-admin-shell .vorin-number-control {
+    align-items: stretch;
+    display: grid;
+    gap: 0.4rem;
+    grid-template-columns: 2.65rem minmax(0, 1fr) 2.65rem;
+    max-width: min(100%, 52rem);
+    width: 100%;
+}
+
+body.vorin-admin-shell .vorin-number-control__input {
+    appearance: textfield;
+    max-width: none !important;
+    min-width: 0;
+}
+
+body.vorin-admin-shell .vorin-number-control__input::-webkit-inner-spin-button,
+body.vorin-admin-shell .vorin-number-control__input::-webkit-outer-spin-button {
+    appearance: none;
+    margin: 0;
+}
+
+body.vorin-admin-shell .vorin-number-control__button {
+    align-items: center;
+    background: var(--vorin-hero-end);
+    border: 1px solid rgba(1, 21, 56, 0.12);
+    border-radius: 0.9rem;
+    color: #ffffff;
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 1rem;
+    font-weight: 800;
+    justify-content: center;
+    min-height: 3rem;
+    padding: 0;
+}
+
+body.vorin-admin-shell .vorin-number-control__button:hover,
+body.vorin-admin-shell .vorin-number-control__button:focus-visible {
+    background: var(--vorin-accent-dark);
+    outline: 0;
+}
+
+html.dark body.vorin-admin-shell .vorin-number-control__button {
+    background: rgba(11, 64, 156, 0.72);
+    border-color: rgba(217, 226, 236, 0.14);
+    color: #f8fbff;
+}
+
+body.vorin-admin-shell .select2-container .select2-selection--single,
+body.vorin-admin-shell .select2-container--admin-autocomplete .select2-selection--single {
+    align-items: center;
+    border-radius: 0.95rem !important;
+    box-sizing: border-box;
+    display: flex;
+    min-height: 3rem;
+    padding: 0 2.65rem 0 1rem !important;
+}
+
+body.vorin-admin-shell .select2-container .select2-selection--single .select2-selection__rendered,
+body.vorin-admin-shell .select2-container--admin-autocomplete .select2-selection--single .select2-selection__rendered {
+    display: block;
+    line-height: 1.25 !important;
+    overflow: hidden;
+    padding: 0 !important;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+}
+
+body.vorin-admin-shell .select2-container .select2-selection--single .select2-selection__arrow,
+body.vorin-admin-shell .select2-container--admin-autocomplete .select2-selection--single .select2-selection__arrow {
+    align-items: center;
+    display: flex;
+    height: 100% !important;
+    justify-content: center;
+    right: 0.85rem;
+    top: 0;
+    width: 1.25rem;
+}
+
+@media (max-width: 900px) {
+    body.vorin-admin-shell.change-form #content-main .form-row .flex-container {
+        grid-template-columns: 1fr;
+    }
+
+    body.vorin-admin-shell.change-form #content-main .form-row .flex-container > label,
+    body.vorin-admin-shell.change-form #content-main .form-row:has(textarea) .flex-container > label,
+    body.vorin-admin-shell.change-form #content-main .form-row:has(.datetime) .flex-container > label {
+        align-self: start;
+        padding-top: 0 !important;
+    }
+
+    body.vorin-admin-shell .vorin-datetime-stack {
+        grid-template-columns: 1fr;
+    }
+
+    body.vorin-admin-shell .vorin-number-control {
+        grid-template-columns: 2.55rem minmax(0, 1fr) 2.55rem;
+    }
+}

@@ -155,9 +155,11 @@ function applyVorinTheme(mode) {
     syncVorinThemeRoot(mode);
 })();
 
-function closeVorinMenus() {
+function closeVorinMenus(exceptMenu = null) {
     document.querySelectorAll("[data-vorin-menu][open]").forEach((menu) => {
-        menu.removeAttribute("open");
+        if (menu !== exceptMenu) {
+            menu.removeAttribute("open");
+        }
     });
 }
 
@@ -401,12 +403,52 @@ function setupVorinSidebarToggle() {
 }
 
 function setupVorinMenus() {
-    document.addEventListener("click", (event) => {
-        document.querySelectorAll("[data-vorin-menu][open]").forEach((menu) => {
-            if (!menu.contains(event.target)) {
-                menu.removeAttribute("open");
+    document.querySelectorAll("[data-vorin-menu] > summary").forEach((summary) => {
+        if (summary.dataset.vorinMenuToggleBound === "1") {
+            return;
+        }
+
+        summary.dataset.vorinMenuToggleBound = "1";
+
+        const toggleMenu = (event) => {
+            const menu = summary.closest("[data-vorin-menu]");
+
+            if (!menu) {
+                return;
             }
+
+            event.preventDefault();
+            event.stopImmediatePropagation();
+
+            const shouldOpen = !menu.open;
+            closeVorinMenus(shouldOpen ? menu : null);
+            menu.open = shouldOpen;
+        };
+
+        summary.addEventListener("click", toggleMenu, true);
+        summary.addEventListener("keydown", (event) => {
+            if (event.key !== "Enter" && event.key !== " ") {
+                return;
+            }
+
+            toggleMenu(event);
         });
+    });
+
+    document.addEventListener("pointerdown", (event) => {
+        const path = typeof event.composedPath === "function" ? event.composedPath() : [];
+        const activeMenu = Array.from(document.querySelectorAll("[data-vorin-menu][open]")).find((menu) =>
+            path.includes(menu) || menu.contains(event.target)
+        );
+
+        closeVorinMenus(activeMenu || null);
+    }, true);
+
+    document.addEventListener("click", (event) => {
+        const clickedMenu = event.target.closest?.("[data-vorin-menu]");
+        if (!clickedMenu) {
+            closeVorinMenus();
+        }
     });
 
     document.addEventListener("keydown", (event) => {
@@ -414,6 +456,123 @@ function setupVorinMenus() {
             closeVorinMenus();
         }
     });
+}
+
+function vorinFileInputLabel(input) {
+    if (!input.files || input.files.length === 0) {
+        return "";
+    }
+
+    return input.files.length === 1 ? input.files[0].name : `${input.files.length} files selected`;
+}
+
+function syncVorinFileInput(input, wrapper, label) {
+    const fileLabel = vorinFileInputLabel(input);
+
+    label.textContent = fileLabel;
+    wrapper.classList.toggle("is-empty", !fileLabel);
+}
+
+function enhanceVorinFileInput(input) {
+    if (!input || input.dataset.vorinFileEnhanced === "1" || input.closest(".vorin-file-control")) {
+        return;
+    }
+
+    input.dataset.vorinFileEnhanced = "1";
+    input.classList.add("vorin-file-control__native");
+
+    const wrapper = document.createElement("label");
+    wrapper.className = "vorin-file-control";
+
+    const button = document.createElement("span");
+    button.className = "vorin-file-control__button";
+    button.textContent = input.dataset.buttonLabel || "Select file";
+
+    const label = document.createElement("span");
+    label.className = "vorin-file-control__name";
+
+    input.parentNode.insertBefore(wrapper, input);
+    wrapper.append(input, button, label);
+    syncVorinFileInput(input, wrapper, label);
+
+    input.addEventListener("change", () => {
+        syncVorinFileInput(input, wrapper, label);
+    });
+}
+
+function setupVorinFileInputs(root = document) {
+    root.querySelectorAll?.('.change-form #content-main .form-row input[type="file"]').forEach(enhanceVorinFileInput);
+}
+
+function parseVorinNumberValue(input) {
+    const value = Number(input.value);
+    return Number.isFinite(value) ? value : 0;
+}
+
+function getVorinDecimalPlaces(value) {
+    const match = String(value || "").match(/\.(\d+)/);
+    return match ? match[1].length : 0;
+}
+
+function clampVorinNumber(input, value) {
+    let nextValue = value;
+    const min = Number(input.getAttribute("min"));
+    const max = Number(input.getAttribute("max"));
+
+    if (Number.isFinite(min)) {
+        nextValue = Math.max(nextValue, min);
+    }
+
+    if (Number.isFinite(max)) {
+        nextValue = Math.min(nextValue, max);
+    }
+
+    return nextValue;
+}
+
+function stepVorinNumberInput(input, direction) {
+    const step = Number(input.getAttribute("step") || "1");
+    const normalizedStep = Number.isFinite(step) && step > 0 ? step : 1;
+    const decimalPlaces = getVorinDecimalPlaces(normalizedStep);
+    const nextValue = clampVorinNumber(input, parseVorinNumberValue(input) + normalizedStep * direction);
+
+    input.value = decimalPlaces > 0 ? nextValue.toFixed(decimalPlaces) : String(Math.round(nextValue));
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+}
+
+function enhanceVorinNumberInput(input) {
+    if (!input || input.dataset.vorinNumberEnhanced === "1" || input.closest(".vorin-number-control")) {
+        return;
+    }
+
+    input.dataset.vorinNumberEnhanced = "1";
+    input.classList.add("vorin-number-control__input");
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "vorin-number-control";
+
+    const decrement = document.createElement("button");
+    decrement.type = "button";
+    decrement.className = "vorin-number-control__button";
+    decrement.setAttribute("aria-label", "Decrease value");
+    decrement.textContent = "−";
+
+    const increment = document.createElement("button");
+    increment.type = "button";
+    increment.className = "vorin-number-control__button";
+    increment.setAttribute("aria-label", "Increase value");
+    increment.textContent = "+";
+
+    input.parentNode.insertBefore(wrapper, input);
+    wrapper.append(decrement, input, increment);
+
+    decrement.addEventListener("click", () => stepVorinNumberInput(input, -1));
+    increment.addEventListener("click", () => stepVorinNumberInput(input, 1));
+}
+
+function setupVorinNumberInputs(root = document) {
+    root.querySelectorAll?.('.change-form #content-main .form-row input[type="number"]:not([data-no-vorin-number="1"])').forEach(enhanceVorinNumberInput);
 }
 
 function setupVorinHistoryButtons() {
@@ -866,6 +1025,120 @@ function normalizeVorinTimeValue(value) {
     return match ? `${match[1]}:${match[2]}` : "";
 }
 
+function vorinSelectHasOption(select, value) {
+    return Array.from(select.options).some((option) => option.value === value);
+}
+
+function appendVorinTimeOption(select, value, label, beforeNode = null) {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = label;
+    select.insertBefore(option, beforeNode);
+}
+
+function buildVorinTimeSelectOptions(select) {
+    if (select.dataset.vorinTimeOptionsBuilt === "1") {
+        return;
+    }
+
+    appendVorinTimeOption(select, "", "Select time");
+
+    for (let hour = 0; hour < 24; hour += 1) {
+        for (let minute = 0; minute < 60; minute += 15) {
+            const value = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+            appendVorinTimeOption(select, value, value);
+        }
+    }
+
+    select.dataset.vorinTimeOptionsBuilt = "1";
+}
+
+function ensureVorinTimeSelect(input) {
+    const selectId = input.id ? `${input.id}_vorin_time_select` : "";
+    let select = selectId ? document.getElementById(selectId) : null;
+
+    if (!select) {
+        select = document.createElement("select");
+        select.className = "vorin-time-select";
+        select.dataset.noVorinSelect = "1";
+        select.dataset.vorinTimeSelect = "1";
+        select.setAttribute("aria-label", "Select time");
+
+        if (selectId) {
+            select.id = selectId;
+        }
+
+        input.insertAdjacentElement("afterend", select);
+    }
+
+    buildVorinTimeSelectOptions(select);
+    return select;
+}
+
+function enhanceVorinTimeInput(input) {
+    if (!input) {
+        return;
+    }
+
+    input.dataset.vorinEnhancedTime = "1";
+    input.dataset.vorinNativePicker = "1";
+    input.classList.add("vorin-time-source-input");
+    input.setAttribute("type", "text");
+    input.setAttribute("aria-hidden", "true");
+    input.tabIndex = -1;
+
+    const normalizedValue = normalizeVorinTimeValue(input.value);
+
+    if (normalizedValue) {
+        input.value = normalizedValue;
+    }
+
+    const select = ensureVorinTimeSelect(input);
+
+    if (normalizedValue && !vorinSelectHasOption(select, normalizedValue)) {
+        appendVorinTimeOption(select, normalizedValue, normalizedValue, select.options[1] || null);
+    }
+
+    select.value = normalizedValue;
+
+    const label = input.closest(".vorin-datetime-row")?.querySelector(".vorin-datetime-row__label");
+    if (label) {
+        select.setAttribute("aria-label", label.textContent.trim() || "Select time");
+    }
+
+    const shortcuts = input.parentElement?.querySelector(".datetimeshortcuts");
+    if (shortcuts) {
+        shortcuts.dataset.vorinNativePicker = "1";
+        shortcuts.classList.add("vorin-time-shortcuts");
+    }
+
+    if (select.dataset.vorinTimeBound !== "1") {
+        select.dataset.vorinTimeBound = "1";
+        select.addEventListener("change", () => {
+            input.value = select.value;
+            input.dispatchEvent(new Event("input", { bubbles: true }));
+            input.dispatchEvent(new Event("change", { bubbles: true }));
+        });
+    }
+
+    if (input.dataset.vorinTimeBound !== "1") {
+        input.dataset.vorinTimeBound = "1";
+        input.addEventListener("change", () => {
+            const value = normalizeVorinTimeValue(input.value);
+
+            if (value && !vorinSelectHasOption(select, value)) {
+                appendVorinTimeOption(select, value, value, select.options[1] || null);
+            }
+
+            select.value = value;
+        });
+    }
+}
+
+function setupVorinTimeSelects(root = document) {
+    root.querySelectorAll?.('.change-form #content-main input.vTimeField:not([data-no-vorin-time-select="1"])').forEach(enhanceVorinTimeInput);
+}
+
 function getVorinTodayValue() {
     const now = new Date();
     const year = now.getFullYear();
@@ -1103,6 +1376,10 @@ function setupVorinDateTimeInputs() {
             if (!isBound) {
                 input.dataset.vorinPickerBound = "1";
                 input.addEventListener("click", (event) => {
+                    if (input.dataset.vorinEnhancedTime === "1") {
+                        return;
+                    }
+
                     event.preventDefault();
                     event.stopPropagation();
                     window.setTimeout(() => {
@@ -1112,6 +1389,10 @@ function setupVorinDateTimeInputs() {
                 });
 
                 input.addEventListener("keydown", (event) => {
+                    if (input.dataset.vorinEnhancedTime === "1") {
+                        return;
+                    }
+
                     if (event.key === "ArrowDown" || event.key === "Enter") {
                         event.preventDefault();
                         openVorinPicker(input);
@@ -1130,6 +1411,9 @@ function scheduleVorinEnhancements() {
         setupVorinPlainSelects();
         enhanceVorinSplitDateTimeFields();
         setupVorinDateTimeInputs();
+        setupVorinTimeSelects();
+        setupVorinFileInputs();
+        setupVorinNumberInputs();
         setupVorinMediaCards();
     }, 60);
 }
@@ -1213,30 +1497,42 @@ window.addEventListener("DOMContentLoaded", () => {
     setupVorinAutocompleteFields();
     setupVorinPlainSelects();
     setupVorinBulkActions();
+    setupVorinFileInputs();
+    setupVorinNumberInputs();
     enhanceVorinSplitDateTimeFields();
     setupVorinDateTimeInputs();
+    setupVorinTimeSelects();
     setupVorinThemeMediaWatcher();
     setupVorinEnhancementObserver();
     window.setTimeout(setupVorinAutocompleteFields, 120);
     window.setTimeout(setupVorinPlainSelects, 120);
     window.setTimeout(setupVorinBulkActions, 120);
+    window.setTimeout(setupVorinFileInputs, 120);
+    window.setTimeout(setupVorinNumberInputs, 120);
     window.setTimeout(setupVorinAutocompleteFields, 500);
     window.setTimeout(setupVorinPlainSelects, 500);
     window.setTimeout(setupVorinBulkActions, 500);
+    window.setTimeout(setupVorinFileInputs, 500);
+    window.setTimeout(setupVorinNumberInputs, 500);
     window.setTimeout(enhanceVorinSplitDateTimeFields, 120);
     window.setTimeout(setupVorinDateTimeInputs, 120);
+    window.setTimeout(setupVorinTimeSelects, 180);
     window.setTimeout(setupVorinAutocompleteFields, 1000);
     window.setTimeout(setupVorinPlainSelects, 1000);
     window.setTimeout(setupVorinBulkActions, 1000);
     window.setTimeout(enhanceVorinSplitDateTimeFields, 500);
     window.setTimeout(setupVorinDateTimeInputs, 500);
+    window.setTimeout(setupVorinTimeSelects, 700);
 });
 
 window.addEventListener("load", () => {
     setupVorinAutocompleteFields();
     setupVorinPlainSelects();
     setupVorinBulkActions();
+    setupVorinFileInputs();
+    setupVorinNumberInputs();
     enhanceVorinSplitDateTimeFields();
     setupVorinDateTimeInputs();
+    setupVorinTimeSelects();
     setupVorinEnhancementObserver();
 });
