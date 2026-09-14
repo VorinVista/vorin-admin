@@ -12,6 +12,86 @@
     --vorin-body-font: "Roboto", "Public Sans", "Segoe UI", sans-serif;
 }
 
+.vorin-file-input {
+    align-items: center;
+    background: #fff;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.7rem;
+    cursor: pointer;
+    display: flex;
+    gap: 0.75rem;
+    min-height: 3rem;
+    overflow: hidden;
+    padding: 0.35rem;
+    position: relative;
+    width: min(100%, 46rem);
+}
+
+.vorin-file-input:focus-within {
+    border-color: var(--vorin-accent);
+    box-shadow: 0 0 0 3px rgba(241, 112, 32, 0.16);
+}
+
+.vorin-file-input__native {
+    inset: 0;
+    opacity: 0;
+    position: absolute;
+    width: 100%;
+}
+
+.vorin-file-input__button {
+    background: var(--vorin-accent);
+    border-radius: 0.5rem;
+    color: #fff;
+    flex: 0 0 auto;
+    font-weight: 700;
+    padding: 0.65rem 1rem;
+}
+
+.vorin-file-input__name {
+    color: #64748b;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.vorin-file-input.has-file .vorin-file-input__name { color: #0f172a; }
+
+.vorin-number-input {
+    align-items: stretch;
+    display: inline-flex;
+    max-width: 100%;
+}
+
+.vorin-number-input input[type="number"] {
+    border-radius: 0 !important;
+    min-width: 5rem;
+    text-align: center;
+}
+
+.vorin-number-input__button {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    color: #334155;
+    cursor: pointer;
+    font-size: 1.1rem;
+    min-width: 2.7rem;
+}
+
+.vorin-number-input__button:first-child { border-radius: 0.65rem 0 0 0.65rem; }
+.vorin-number-input__button:last-child { border-radius: 0 0.65rem 0.65rem 0; }
+
+.dark .vorin-file-input,
+.dark .vorin-number-input__button {
+    background: #1f2937;
+    border-color: #475569;
+}
+
+.dark .vorin-file-input__name,
+.dark .vorin-number-input__button { color: #cbd5e1; }
+.dark .vorin-file-input.has-file .vorin-file-input__name { color: #f8fafc; }
+
 body {
     font-family: var(--vorin-body-font);
     letter-spacing: 0.01em;
@@ -1314,7 +1394,7 @@ body.vorin-admin-shell #content > h2 {
     font-size: 0.86rem;
     font-weight: 700;
     line-height: 1;
-    min-height: 2.9rem;
+    min-height: 3rem;
     padding: 0.7rem 1rem;
     text-decoration: none;
     transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
@@ -1349,9 +1429,10 @@ body.vorin-admin-shell #content > h2 {
     flex-wrap: wrap;
     gap: 0.7rem;
     list-style: none;
-    margin: 0 0 1rem;
+    margin: 0 !important;
     padding: 0;
-    position: static;
+    position: relative !important;
+    z-index: 2;
 }
 
 .change-form .object-tools li {
@@ -1765,8 +1846,10 @@ body.vorin-admin-shell #content > h2 {
     text-transform: uppercase;
 }
 
-.change-list .vorin-bulk-actions__submit {
+body.vorin-admin-shell.change-list .vorin-bulk-actions__submit {
+    align-self: end;
     justify-self: start;
+    min-height: 3rem !important;
     min-width: 0;
     width: 100%;
 }
@@ -2755,33 +2838,102 @@ body[data-vorin-sidebar-open="false"] #nav-sidebar-inner {
     display: flex;
     flex-direction: column;
     gap: 0.125rem;
+    list-style: none;
     margin: 0.35rem 0 0 1.25rem;
     padding-left: 0.95rem;
 }
 
+.vorin-sidebar-children > li {
+    list-style: none;
+    min-width: 0;
+}
+
 .change-form #content-main {
-    display: grid;
-    gap: 1.25rem;
+    clear: both;
+    display: grid !important;
+    gap: 1.25rem !important;
+    position: relative;
+    z-index: 1;
 }
 
 .change-form #content-main .module {
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(246, 248, 252, 0.96));
+    background-clip: padding-box;
     border: 1px solid rgba(1, 21, 56, 0.08);
     border-radius: 1.15rem;
-    box-shadow: 0 16px 40px rgba(1, 21, 56, 0.08);
+    box-shadow: 0 0 0 1px rgba(1, 21, 56, 0.08), 0 16px 40px rgba(1, 21, 56, 0.08);
     overflow: hidden;
 }
 
 .dark .change-form #content-main .module {
     background: linear-gradient(180deg, rgba(14, 25, 48, 0.96), rgba(10, 21, 42, 0.96));
     border-color: rgba(217, 226, 236, 0.1);
-    box-shadow: none;
+    box-shadow: 0 0 0 1px rgba(217, 226, 236, 0.1), 0 16px 40px rgba(0, 0, 0, 0.16);
+}
+
+/* Keep rich-editor chrome consistent with the panel. The editable iframe is
+   skinned by vorin_panel.js because iframe documents cannot inherit this CSS. */
+.tox .tox-toolbar,
+.tox .tox-toolbar__primary,
+.tox .tox-collection__group,
+.tox .tox-dialog__body-content,
+.tox .tox-sidebar-wrap {
+    scrollbar-color: #52637d #edf1f5;
+    scrollbar-width: thin;
+}
+
+.tox *::-webkit-scrollbar {
+    height: 11px;
+    width: 11px;
+}
+
+.tox *::-webkit-scrollbar-track {
+    background: #edf1f5;
+}
+
+.tox *::-webkit-scrollbar-thumb {
+    background: #52637d;
+    border: 3px solid #edf1f5;
+    border-radius: 999px;
+}
+
+.tox *::-webkit-scrollbar-thumb:hover {
+    background: #30425f;
+}
+
+.tox *::-webkit-scrollbar-corner {
+    background: #edf1f5;
+}
+
+.dark .tox .tox-toolbar,
+.dark .tox .tox-toolbar__primary,
+.dark .tox .tox-collection__group,
+.dark .tox .tox-dialog__body-content,
+.dark .tox .tox-sidebar-wrap {
+    scrollbar-color: #d8c29a #0b1426;
+}
+
+.dark .tox *::-webkit-scrollbar-track {
+    background: #0b1426;
+}
+
+.dark .tox *::-webkit-scrollbar-thumb {
+    background: #d8c29a;
+    border-color: #0b1426;
+}
+
+.dark .tox *::-webkit-scrollbar-thumb:hover {
+    background: #f1e0bf;
+}
+
+.dark .tox *::-webkit-scrollbar-corner {
+    background: #0b1426;
 }
 
 .change-form #content-main h2 {
     background: linear-gradient(90deg, rgba(1, 21, 56, 0.96), rgba(11, 45, 115, 0.92));
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 0;
+    border-radius: calc(1.15rem - 1px) calc(1.15rem - 1px) 0 0;
     color: #f8fbff;
     font-family: var(--vorin-heading-font);
     font-size: 0.95rem;
@@ -3739,6 +3891,94 @@ body[data-vorin-sidebar-open="false"] #nav-sidebar-inner {
     padding: 0.95rem 1.15rem;
 }
 
+body.vorin-admin-shell.vorin-has-sticky-actionbar .vorin-admin-shell__content-start {
+    padding-bottom: 8.5rem;
+}
+
+body.vorin-admin-shell.change-form #content-main .vorin-sticky-actionbar {
+    align-items: center;
+    backdrop-filter: blur(18px);
+    background: rgba(17, 28, 53, 0.96);
+    border: 1px solid rgba(217, 226, 236, 0.18);
+    border-radius: 1.1rem;
+    bottom: max(0.8rem, env(safe-area-inset-bottom));
+    box-shadow: 0 20px 48px rgba(1, 12, 32, 0.28);
+    box-sizing: border-box;
+    display: flex;
+    gap: 0.75rem;
+    left: calc(var(--vorin-sidebar-width, 278px) + 1.5rem);
+    margin: 0;
+    max-width: none;
+    padding: 0.9rem 1rem;
+    position: fixed;
+    right: 1.5rem;
+    top: auto;
+    width: auto;
+    z-index: 1200;
+}
+
+body.vorin-admin-shell[data-vorin-sidebar-open="false"].change-form #content-main .vorin-sticky-actionbar {
+    left: 1.5rem;
+}
+
+body.vorin-admin-shell.change-form #content-main .vorin-sticky-actionbar--duplicate {
+    display: none !important;
+}
+
+body.vorin-admin-shell.change-form #content-main .vorin-sticky-actionbar input,
+body.vorin-admin-shell.change-form #content-main .vorin-sticky-actionbar button,
+body.vorin-admin-shell.change-form #content-main .vorin-sticky-actionbar a {
+    flex: 0 1 auto;
+    margin: 0;
+    white-space: nowrap;
+}
+
+body.vorin-admin-shell.change-form #content-main .vorin-sticky-actionbar .deletelink {
+    margin-left: auto;
+}
+
+@media (max-width: 1024px) {
+    body.vorin-admin-shell.change-form #content-main .vorin-sticky-actionbar,
+    body.vorin-admin-shell[data-vorin-sidebar-open="false"].change-form #content-main .vorin-sticky-actionbar {
+        left: 1rem;
+        right: 1rem;
+    }
+}
+
+@media (max-width: 640px) {
+    body.vorin-admin-shell.vorin-has-sticky-actionbar .vorin-admin-shell__content-start {
+        padding-bottom: 11rem;
+    }
+
+    body.vorin-admin-shell.change-form #content-main .vorin-sticky-actionbar,
+    body.vorin-admin-shell[data-vorin-sidebar-open="false"].change-form #content-main .vorin-sticky-actionbar {
+        bottom: max(0.55rem, env(safe-area-inset-bottom));
+        display: grid;
+        gap: 0.55rem;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        left: 0.65rem;
+        padding: 0.65rem;
+        right: 0.65rem;
+    }
+
+    body.vorin-admin-shell.change-form #content-main .vorin-sticky-actionbar input,
+    body.vorin-admin-shell.change-form #content-main .vorin-sticky-actionbar button,
+    body.vorin-admin-shell.change-form #content-main .vorin-sticky-actionbar a {
+        align-items: center;
+        display: inline-flex;
+        justify-content: center;
+        min-width: 0;
+        overflow: hidden;
+        padding-inline: 0.7rem;
+        text-overflow: ellipsis;
+        width: 100%;
+    }
+
+    body.vorin-admin-shell.change-form #content-main .vorin-sticky-actionbar .deletelink {
+        margin-left: 0;
+    }
+}
+
 .change-form .submit-row input,
 .change-form .submit-row button,
 .change-form .submit-row a {
@@ -4211,7 +4451,8 @@ body.vorin-admin-shell:not(.change-form):not(.change-list) #content-main .submit
     color: #d97706;
 }
 
-.field-line input[type="checkbox"].vorin-switch-input {
+.field-line input[type="checkbox"].vorin-switch-input,
+.change-form #content-main .checkbox-row input[type="checkbox"].vorin-switch-input {
     appearance: none;
     background: #cbd5e1;
     border: 1px solid rgba(1, 21, 56, 0.14);
@@ -4225,7 +4466,8 @@ body.vorin-admin-shell:not(.change-form):not(.change-list) #content-main .submit
     width: 3.2rem;
 }
 
-.field-line input[type="checkbox"].vorin-switch-input::after {
+.field-line input[type="checkbox"].vorin-switch-input::after,
+.change-form #content-main .checkbox-row input[type="checkbox"].vorin-switch-input::after {
     background: #fff;
     border-radius: 999px;
     box-shadow: 0 5px 14px rgba(15, 23, 42, 0.16);
@@ -4238,16 +4480,19 @@ body.vorin-admin-shell:not(.change-form):not(.change-list) #content-main .submit
     width: 1.35rem;
 }
 
-.field-line input[type="checkbox"].vorin-switch-input:checked {
+.field-line input[type="checkbox"].vorin-switch-input:checked,
+.change-form #content-main .checkbox-row input[type="checkbox"].vorin-switch-input:checked {
     background: linear-gradient(135deg, #2563eb, #4f46e5);
     border-color: rgba(11, 64, 156, 0.35);
 }
 
-.field-line input[type="checkbox"].vorin-switch-input:checked::after {
+.field-line input[type="checkbox"].vorin-switch-input:checked::after,
+.change-form #content-main .checkbox-row input[type="checkbox"].vorin-switch-input:checked::after {
     transform: translateX(1.42rem);
 }
 
-.field-line input[type="checkbox"].vorin-switch-input:focus {
+.field-line input[type="checkbox"].vorin-switch-input:focus,
+.change-form #content-main .checkbox-row input[type="checkbox"].vorin-switch-input:focus {
     box-shadow: 0 0 0 0.2rem rgba(241, 112, 32, 0.14);
     outline: none;
 }
@@ -4281,6 +4526,164 @@ body.vorin-admin-shell:not(.change-form):not(.change-list) #content-main .submit
 .field-line input[type="checkbox"].vorin-switch-input + div .text-xs {
     color: #64748b;
     margin-left: 0;
+}
+
+.change-form #content-main fieldset.module > .description {
+    background: rgba(11, 64, 156, 0.04);
+    border-bottom: 1px solid rgba(1, 21, 56, 0.08);
+    color: #596b84;
+    line-height: 1.55;
+    margin: 0;
+    padding: 0.8rem 1.15rem;
+}
+
+.dark .change-form #content-main fieldset.module > .description {
+    background: rgba(255, 255, 255, 0.025);
+    border-bottom-color: rgba(217, 226, 236, 0.08);
+    color: rgba(217, 226, 236, 0.74);
+}
+
+.change-form #content-main .flex-container.checkbox-row {
+    align-items: center;
+    display: flex !important;
+    flex-direction: row;
+    gap: 0.85rem;
+    grid-template-columns: none;
+    padding: 1rem 1.15rem 0.35rem;
+}
+
+.change-form #content-main .checkbox-row label.vCheckboxLabel {
+    cursor: pointer;
+    font-size: 0.88rem;
+    letter-spacing: 0.055em;
+    margin: 0;
+}
+
+.change-form #content-main .checkbox-row + .help {
+    margin: 0;
+    padding: 0 1.15rem 1rem 5.2rem;
+}
+
+.vorin-status-pill {
+    align-items: center;
+    background: rgba(71, 85, 105, 0.11);
+    border: 1px solid rgba(71, 85, 105, 0.16);
+    border-radius: 999px;
+    color: #475569;
+    display: inline-flex;
+    font-size: 0.74rem;
+    font-weight: 750;
+    gap: 0.4rem;
+    line-height: 1;
+    padding: 0.48rem 0.68rem;
+    white-space: nowrap;
+}
+
+.vorin-status-pill::before {
+    background: currentColor;
+    border-radius: 999px;
+    content: "";
+    height: 0.42rem;
+    width: 0.42rem;
+}
+
+.vorin-status-pill--active {
+    background: rgba(22, 163, 74, 0.11);
+    border-color: rgba(22, 163, 74, 0.2);
+    color: #15803d;
+}
+
+.vorin-status-pill--paused {
+    background: rgba(217, 119, 6, 0.12);
+    border-color: rgba(217, 119, 6, 0.2);
+    color: #b45309;
+}
+
+.vorin-key-value-editor {
+    display: grid;
+    gap: 0.75rem;
+    width: 100%;
+}
+
+.vorin-key-value-editor__source {
+    border: 0 !important;
+    clip: rect(0 0 0 0);
+    height: 1px !important;
+    margin: -1px !important;
+    overflow: hidden;
+    padding: 0 !important;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px !important;
+}
+
+.vorin-key-value-editor__list {
+    display: grid;
+    gap: 0.65rem;
+}
+
+.vorin-key-value-editor__row {
+    align-items: center;
+    display: grid;
+    gap: 0.6rem;
+    grid-template-columns: minmax(9rem, 0.8fr) minmax(12rem, 1.2fr) auto;
+}
+
+.vorin-key-value-editor__row input {
+    margin: 0 !important;
+    width: 100% !important;
+}
+
+.vorin-key-value-editor__remove,
+.vorin-key-value-editor__add {
+    align-items: center;
+    border: 1px solid rgba(1, 21, 56, 0.13);
+    border-radius: 0.75rem;
+    cursor: pointer;
+    display: inline-flex;
+    font-weight: 700;
+    justify-content: center;
+    min-height: 2.75rem;
+}
+
+.vorin-key-value-editor__remove {
+    background: rgba(185, 28, 28, 0.06);
+    color: #b91c1c;
+    min-width: 2.75rem;
+}
+
+.vorin-key-value-editor__add {
+    background: rgba(241, 112, 32, 0.08);
+    color: var(--vorin-accent-dark);
+    justify-self: start;
+    padding: 0.7rem 1rem;
+}
+
+.dark .vorin-status-pill--active {
+    color: #86efac;
+}
+
+.dark .vorin-status-pill--paused {
+    color: #fdba74;
+}
+
+.dark .vorin-status-pill--muted {
+    color: #cbd5e1;
+}
+
+.dark .vorin-key-value-editor__remove,
+.dark .vorin-key-value-editor__add {
+    border-color: rgba(217, 226, 236, 0.14);
+}
+
+@media (max-width: 720px) {
+    .vorin-key-value-editor__row {
+        grid-template-columns: 1fr auto;
+    }
+
+    .vorin-key-value-editor__row input:first-child {
+        grid-column: 1 / -1;
+    }
 }
 
 .field-questions_builder_html .readonly {
@@ -4375,7 +4778,8 @@ body.vorin-admin-shell:not(.change-form):not(.change-list) #content-main .submit
     box-shadow: 0 16px 34px rgba(1, 21, 56, 0.08);
 }
 
-.dark .field-line input[type="checkbox"].vorin-switch-input {
+.dark .field-line input[type="checkbox"].vorin-switch-input,
+.dark .change-form #content-main .checkbox-row input[type="checkbox"].vorin-switch-input {
     background: rgba(255, 255, 255, 0.14);
     border-color: rgba(217, 226, 236, 0.12);
 }
@@ -4792,12 +5196,16 @@ body[data-vorin-sidebar-open="false"] .vorin-sidebar {
     align-items: center;
     display: inline-flex;
     min-height: 42px;
+    max-width: 100%;
 }
 
 .vorin-sidebar__brand-logo {
     display: block;
     height: auto;
-    max-width: 10rem;
+    max-height: 3rem;
+    max-width: 9.5rem;
+    object-fit: contain;
+    width: auto;
 }
 
 .vorin-sidebar__search {
@@ -4977,6 +5385,7 @@ body.vorin-admin-shell #container,
 }
 
 .vorin-sidebar__link.is-active,
+.vorin-sidebar__child-link.is-active,
 .vorin-sidebar-summary.is-active,
 .vorin-sidebar-details[open] > .vorin-sidebar-summary {
     background: rgba(241, 112, 32, 0.08);
@@ -4984,6 +5393,7 @@ body.vorin-admin-shell #container,
 }
 
 .dark .vorin-sidebar__link.is-active,
+.dark .vorin-sidebar__child-link.is-active,
 .dark .vorin-sidebar-summary.is-active,
 .dark .vorin-sidebar-details[open] > .vorin-sidebar-summary {
     background: rgba(255, 255, 255, 0.07);

@@ -1,6 +1,15 @@
 from types import MethodType
 
+from django.conf import settings
 from django.apps import AppConfig
+from django.utils.module_loading import import_string
+
+
+def _configured_callback(name, fallback):
+    callback = getattr(settings, "VORIN_ADMIN", {}).get(name, fallback)
+    if isinstance(callback, str):
+        return import_string(callback)
+    return callback
 
 
 class VorinAdminConfig(AppConfig):
@@ -13,7 +22,7 @@ class VorinAdminConfig(AppConfig):
         from django.utils import timezone
 
         from vorin_admin.config import get_panel_settings
-        from vorin_admin.dashboard import dashboard_callback
+        from vorin_admin.dashboard import dashboard_callback, global_context
         from vorin_admin.navigation import build_sidebar_navigation
         from vorin_admin.profiles import patch_user_model
 
@@ -36,6 +45,9 @@ class VorinAdminConfig(AppConfig):
         def each_context(self, request):
             context = original_each_context(request)
             active_panel = get_panel_settings()
+            global_callback = _configured_callback("GLOBAL_CALLBACK", global_context)
+            if global_callback:
+                context.update(global_callback(request) or {})
             context.update(
                 {
                     "panel_settings": active_panel,
@@ -51,7 +63,11 @@ class VorinAdminConfig(AppConfig):
 
         def index(self, request, extra_context=None):
             context = dict(extra_context or {})
-            context = dashboard_callback(request, context)
+            active_dashboard_callback = _configured_callback(
+                "DASHBOARD_CALLBACK", dashboard_callback
+            )
+            if active_dashboard_callback:
+                context = active_dashboard_callback(request, context) or context
             return original_index(request, extra_context=context)
 
         site.each_context = MethodType(each_context, site)

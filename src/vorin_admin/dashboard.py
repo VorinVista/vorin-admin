@@ -35,12 +35,8 @@ def _safe_recent_actions(limit: int = 8):
 def _registered_model_summary() -> list[dict[str, Any]]:
     registry = admin.site._registry
     app_counter = Counter(model._meta.app_label for model in registry)
-
     return [
-        {
-            "app_label": app_label,
-            "count": count,
-        }
+        {"app_label": app_label, "count": count}
         for app_label, count in sorted(app_counter.items())
     ]
 
@@ -56,7 +52,6 @@ def global_context(_request) -> dict[str, Any]:
 def dashboard_callback(request, context: dict[str, Any]) -> dict[str, Any]:
     panel = get_panel_settings()
     user_model = get_user_model()
-
     cards = [
         {
             "title": "Registered models",
@@ -83,7 +78,6 @@ def dashboard_callback(request, context: dict[str, Any]) -> dict[str, Any]:
             "icon": "groups",
         },
     ]
-
     quick_actions = [
         {
             "title": "Open all applications",
@@ -92,7 +86,6 @@ def dashboard_callback(request, context: dict[str, Any]) -> dict[str, Any]:
             "link": reverse_lazy("admin:index"),
         }
     ]
-
     if panel.get("site_url"):
         quick_actions.append(
             {
@@ -102,7 +95,6 @@ def dashboard_callback(request, context: dict[str, Any]) -> dict[str, Any]:
                 "link": panel["site_url"],
             }
         )
-
     if panel.get("support_url"):
         quick_actions.append(
             {
@@ -112,7 +104,6 @@ def dashboard_callback(request, context: dict[str, Any]) -> dict[str, Any]:
                 "link": panel["support_url"],
             }
         )
-
     context.update(
         {
             "panel_settings": panel,

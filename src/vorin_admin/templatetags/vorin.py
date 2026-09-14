@@ -1,6 +1,8 @@
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django import template
 from django.template import Context
-from django.urls import reverse
+from django.urls import NoReverseMatch, reverse
 from django.utils.html import format_html
 
 from vorin_admin.config import versioned_static as build_versioned_static
@@ -21,6 +23,16 @@ def tab_list(*_args, **_kwargs) -> str:
 @register.simple_tag
 def versioned_static(path: str) -> str:
     return build_versioned_static(path)
+
+
+@register.simple_tag
+def admin_model_changelist_url(model_name: str) -> str:
+    model = get_user_model() if model_name == "user" else Group
+    opts = model._meta
+    try:
+        return reverse(f"admin:{opts.app_label}_{opts.model_name}_changelist")
+    except NoReverseMatch:
+        return ""
 
 
 @register.simple_tag(takes_context=True)

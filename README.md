@@ -46,13 +46,13 @@ For local testing before publication, install from a wheel:
 ```bash
 python -m pip install build
 python -m build
-pip install dist/vorin_admin-0.1.0-py3-none-any.whl
+pip install dist/vorin_admin-0.2.0-py3-none-any.whl
 ```
 
 Or install directly from a Git repository:
 
 ```bash
-pip install "vorin-admin @ git+ssh://git@github.com/your-org/vorin-admin.git@v0.1.0"
+pip install "vorin-admin @ git+ssh://git@github.com/your-org/vorin-admin.git@v0.2.0"
 ```
 
 Then in your `settings.py`:
@@ -74,12 +74,18 @@ VORIN_PANEL = {
             "label": "Operations",
             "icon": "settings",
             "description": "Core operational workflows.",
+            "app_label": "your_app",
+            "include_models": ["Project", "Task"],
         },
         {
-            "slug": "reporting",
-            "label": "Reporting",
-            "icon": "monitoring",
-            "description": "Dashboards and summaries.",
+            "slug": "content",
+            "label": "Content",
+            "icon": "menu_book",
+            "description": "Editorial tools outside Django admin.",
+            "children": [
+                {"title": "Studio", "link": "/studio/"},
+                {"title": "Images", "link": "/studio/images/"},
+            ],
         },
     ],
     "footer_links": [
@@ -99,6 +105,26 @@ INSTALLED_APPS = build_vorin_apps(
 VORIN = build_vorin_settings(VORIN_PANEL)
 install_vorin_config(globals(), VORIN)
 ```
+
+Modules with an `app_label` automatically become expandable sidebar categories using the models the current user can access. Use `include_models` to choose and order their children, or `exclude_models` to hide internal audit models. Use `children` for grouped links to external workspaces. The most specific matching child is marked active, including links that share a path but use different query parameters.
+
+Project-specific dashboards should live in the consuming project, not in this package:
+
+```python
+VORIN = build_vorin_settings(
+    VORIN_PANEL,
+    overrides={
+        "DASHBOARD_CALLBACK": "your_project.admin_dashboard.dashboard_callback",
+    },
+)
+install_vorin_config(globals(), VORIN)
+```
+
+### Upstream improvement workflow
+
+Treat a fix as package-level when it applies to ordinary Django admin controls or layout. Add it here with a regression test, then update each consuming project to the tested commit SHA. Keep client branding, business models and dashboard metrics in the consuming project.
+
+The included `notify-boring.yml` workflow sends the published commit SHA to Boring. Boring validates that SHA, updates its pinned requirement, runs its full backend suite and opens an update pull request. This keeps production reproducible and prevents an untested package push from deploying automatically.
 
 In your model admins:
 

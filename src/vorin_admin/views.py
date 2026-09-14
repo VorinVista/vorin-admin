@@ -3,6 +3,7 @@ from __future__ import annotations
 from django.contrib import admin, messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
@@ -54,9 +55,15 @@ def _safe_reverse(name: str) -> str | None:
         return None
 
 
+def _admin_model_changelist_url(model) -> str | None:
+    opts = model._meta
+    return _safe_reverse(f"admin:{opts.app_label}_{opts.model_name}_changelist")
+
+
 def _build_settings_sections(request, panel: dict[str, object]) -> list[dict[str, object]]:
     app_list = admin.site.get_app_list(request)
     installed_areas = []
+    user_model = get_user_model()
 
     for app in app_list:
         models = [model for model in app.get("models", []) if model.get("admin_url")]
@@ -87,12 +94,12 @@ def _build_settings_sections(request, panel: dict[str, object]) -> list[dict[str
                 {
                     "title": "Team members",
                     "description": "Manage staff accounts that can access this admin workspace.",
-                    "link": _safe_reverse("admin:auth_user_changelist"),
+                    "link": _admin_model_changelist_url(user_model),
                 },
                 {
                     "title": "Roles and permissions",
                     "description": "Review groups and permission structure for this admin workspace.",
-                    "link": _safe_reverse("admin:auth_group_changelist"),
+                    "link": _admin_model_changelist_url(Group),
                 },
             ],
         },

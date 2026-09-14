@@ -55,6 +55,7 @@ DEFAULT_PANEL_SETTINGS: dict[str, Any] = {
         "login_visual": "vorin_admin/branding/login-visual.svg",
     },
     "module_registry": [],
+    "module_group_title": _("Modules"),
     "dropdown_links": [],
     "account_links": [],
     "sidebar_links": [],
@@ -134,7 +135,8 @@ def _normalize_module_item(entry: dict[str, Any], *, slug: str | None = None) ->
     raw_slug = slug or entry.get("slug") or entry.get("key") or "module"
     label = entry.get("label") or raw_slug.replace("_", " ").replace("-", " ").title()
 
-    return {
+    normalized = deepcopy(entry)
+    normalized.update({
         "slug": raw_slug,
         "label": label,
         "icon": entry.get("icon", "widgets"),
@@ -142,7 +144,20 @@ def _normalize_module_item(entry: dict[str, Any], *, slug: str | None = None) ->
         "link": entry.get("link"),
         "enabled": entry.get("enabled", True),
         "permission": entry.get("permission"),
-    }
+    })
+
+    normalized_children = []
+    for child in entry.get("children", []):
+        if not isinstance(child, dict):
+            continue
+        normalized_child = deepcopy(child)
+        normalized_child["title"] = child.get("title") or child.get("label") or "Link"
+        normalized_child["link"] = child.get("link")
+        normalized_child["permission"] = child.get("permission")
+        normalized_children.append(normalized_child)
+    normalized["children"] = normalized_children
+
+    return normalized
 
 
 def _normalize_module_registry(modules: Any) -> list[dict[str, Any]]:

@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n vorin %}
 
 <div class="vorin-topbar">
     <div class="vorin-topbar__inner">
@@ -20,7 +20,7 @@
 
         {% if has_permission %}
             <div class="vorin-topbar__group vorin-topbar__group--actions">
-                {% if site_url %}
+                {% if site_url and panel_settings.show_view_on_site %}
                     <a href="{{ site_url }}" target="_blank" rel="noreferrer" class="vorin-topbar__icon" aria-label="{% trans 'View site' %}">
                         <span class="material-symbols-outlined">computer</span>
                     </a>
@@ -56,15 +56,21 @@
                                 <span>{% trans "Edit Profile & Avatar" %}</span>
                             </a>
 
-                            <a href="{% url 'admin:auth_user_changelist' %}">
+                            {% admin_model_changelist_url "user" as admin_user_changelist %}
+                            {% if admin_user_changelist %}
+                            <a href="{{ admin_user_changelist }}">
                                 <span class="material-symbols-outlined">group</span>
                                 <span>{% trans "Team users" %}</span>
                             </a>
+                            {% endif %}
 
-                            <a href="{% url 'admin:auth_group_changelist' %}">
+                            {% admin_model_changelist_url "group" as admin_group_changelist %}
+                            {% if admin_group_changelist %}
+                            <a href="{{ admin_group_changelist }}">
                                 <span class="material-symbols-outlined">admin_panel_settings</span>
                                 <span>{% trans "Roles and groups" %}</span>
                             </a>
+                            {% endif %}
 
                             {% if request.user.has_usable_password %}
                                 <a href="{% url 'admin:password_change' %}">
@@ -73,7 +79,7 @@
                                 </a>
                             {% endif %}
 
-                            {% if site_url %}
+                            {% if site_url and panel_settings.show_view_on_site %}
                                 <a href="{{ site_url }}" target="_blank" rel="noreferrer">
                                     <span class="material-symbols-outlined">open_in_new</span>
                                     <span>{% trans "View site" %}</span>

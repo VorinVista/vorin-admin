@@ -583,6 +583,31 @@ function setupVorinHistoryButtons() {
     });
 }
 
+function setupVorinStickyActionBar() {
+    if (!document.body?.classList.contains("change-form")) {
+        return;
+    }
+
+    const rows = Array.from(
+        document.querySelectorAll("#content-main form .submit-row")
+    ).filter((row) => !row.parentElement?.closest(".submit-row"));
+
+    if (!rows.length) {
+        return;
+    }
+
+    const actionBar = rows[0];
+
+    rows.forEach((row, index) => {
+        row.classList.toggle("vorin-sticky-actionbar", index === 0);
+        row.classList.toggle("vorin-sticky-actionbar--duplicate", index > 0);
+        row.setAttribute("aria-hidden", index > 0 ? "true" : "false");
+    });
+
+    document.body.classList.add("vorin-has-sticky-actionbar");
+    actionBar.removeAttribute("aria-hidden");
+}
+
 function syncQuestionnaireCard(card) {
     if (!card) {
         return;
@@ -1404,6 +1429,243 @@ function setupVorinDateTimeInputs() {
 
 let vorinEnhancementObserverStarted = false;
 
+function getVorinFileInputLabel(input) {
+    if (input.files?.length === 1) return input.files[0].name;
+    if (input.files?.length > 1) return `${input.files.length} files selected`;
+    return "No file selected";
+}
+
+function enhanceVorinFileInputs(root = document) {
+    root.querySelectorAll('input[type="file"]').forEach((input) => {
+        if (
+            input.dataset.vorinFileEnhanced === "1" ||
+            input.dataset.venuexEnhanced === "true" ||
+            input.closest(".vorin-file-input, .venuex-admin-file-input")
+        ) return;
+
+        input.dataset.vorinFileEnhanced = "1";
+        const wrapper = document.createElement("label");
+        const button = document.createElement("span");
+        const filename = document.createElement("span");
+        wrapper.className = "vorin-file-input";
+        button.className = "vorin-file-input__button";
+        button.textContent = input.dataset.buttonLabel || "Select file";
+        filename.className = "vorin-file-input__name";
+        filename.textContent = getVorinFileInputLabel(input);
+        input.classList.add("vorin-file-input__native");
+
+        input.parentNode.insertBefore(wrapper, input);
+        wrapper.append(input, button, filename);
+        input.addEventListener("change", () => {
+            filename.textContent = getVorinFileInputLabel(input);
+            wrapper.classList.toggle("has-file", Boolean(input.files?.length));
+        });
+    });
+}
+
+function enhanceVorinNumberInputs(root = document) {
+    root.querySelectorAll('input[type="number"]').forEach((input) => {
+        if (input.dataset.vorinNumberEnhanced === "1" || input.closest(".vorin-number-input")) return;
+
+        input.dataset.vorinNumberEnhanced = "1";
+        const wrapper = document.createElement("div");
+        const decrement = document.createElement("button");
+        const increment = document.createElement("button");
+        wrapper.className = "vorin-number-input";
+        decrement.type = "button";
+        increment.type = "button";
+        decrement.className = "vorin-number-input__button";
+        increment.className = "vorin-number-input__button";
+        decrement.textContent = "−";
+        increment.textContent = "+";
+        decrement.setAttribute("aria-label", "Decrease value");
+        increment.setAttribute("aria-label", "Increase value");
+
+        input.parentNode.insertBefore(wrapper, input);
+        wrapper.append(decrement, input, increment);
+        const step = (direction) => {
+            direction < 0 ? input.stepDown() : input.stepUp();
+            input.dispatchEvent(new Event("input", { bubbles: true }));
+            input.dispatchEvent(new Event("change", { bubbles: true }));
+        };
+        decrement.addEventListener("click", () => step(-1));
+        increment.addEventListener("click", () => step(1));
+    });
+}
+
+function parseVorinMetadataValue(value) {
+    const trimmed = value.trim();
+    if (!trimmed) return "";
+
+    if (
+        trimmed === "true" ||
+        trimmed === "false" ||
+        trimmed === "null" ||
+        /^-?\d+(\.\d+)?$/.test(trimmed) ||
+        trimmed.startsWith("{") ||
+        trimmed.startsWith("[")
+    ) {
+        try {
+            return JSON.parse(trimmed);
+        } catch (_error) {
+            return value;
+        }
+    }
+    return value;
+}
+
+function formatVorinMetadataValue(value) {
+    if (value !== null && typeof value === "object") {
+        return JSON.stringify(value);
+    }
+    return value === null ? "null" : String(value);
+}
+
+function enhanceVorinKeyValueEditors(root = document) {
+    root.querySelectorAll('textarea[data-vorin-key-value-editor="true"]').forEach((source) => {
+        if (source.dataset.vorinKeyValueEnhanced === "1") return;
+
+        let values;
+        try {
+            values = JSON.parse(source.value || "{}");
+        } catch (_error) {
+            return;
+        }
+        if (!values || Array.isArray(values) || typeof values !== "object") return;
+
+        source.dataset.vorinKeyValueEnhanced = "1";
+        source.classList.add("vorin-key-value-editor__source");
+
+        const editor = document.createElement("div");
+        const list = document.createElement("div");
+        const add = document.createElement("button");
+        editor.className = "vorin-key-value-editor";
+        list.className = "vorin-key-value-editor__list";
+        add.type = "button";
+        add.className = "vorin-key-value-editor__add";
+        add.textContent = "Add information";
+        source.insertAdjacentElement("afterend", editor);
+        editor.append(list, add);
+
+        const sync = () => {
+            const nextValue = {};
+            list.querySelectorAll(".vorin-key-value-editor__row").forEach((row) => {
+                const key = row.querySelector('[data-vorin-metadata-part="key"]').value.trim();
+                const value = row.querySelector('[data-vorin-metadata-part="value"]').value;
+                if (key) nextValue[key] = parseVorinMetadataValue(value);
+            });
+            source.value = JSON.stringify(nextValue, null, 2);
+        };
+
+        const addRow = (key = "", value = "") => {
+            const row = document.createElement("div");
+            const keyInput = document.createElement("input");
+            const valueInput = document.createElement("input");
+            const remove = document.createElement("button");
+            row.className = "vorin-key-value-editor__row";
+            keyInput.type = "text";
+            keyInput.placeholder = "Label";
+            keyInput.value = key;
+            keyInput.dataset.vorinMetadataPart = "key";
+            keyInput.setAttribute("aria-label", "Information label");
+            valueInput.type = "text";
+            valueInput.placeholder = "Value";
+            valueInput.value = formatVorinMetadataValue(value);
+            valueInput.dataset.vorinMetadataPart = "value";
+            valueInput.setAttribute("aria-label", "Information value");
+            remove.type = "button";
+            remove.className = "vorin-key-value-editor__remove";
+            remove.textContent = "×";
+            remove.setAttribute("aria-label", "Remove information");
+            row.append(keyInput, valueInput, remove);
+            list.append(row);
+            keyInput.addEventListener("input", sync);
+            valueInput.addEventListener("input", sync);
+            remove.addEventListener("click", () => {
+                row.remove();
+                sync();
+            });
+            return row;
+        };
+
+        Object.entries(values).forEach(([key, value]) => addRow(key, value));
+        add.addEventListener("click", () => {
+            const row = addRow();
+            row.querySelector("input").focus();
+        });
+        source.form?.addEventListener("submit", sync);
+        sync();
+    });
+}
+
+const VORIN_RICH_EDITOR_SCROLLBAR_STYLE_ID = "vorin-rich-editor-scrollbars";
+
+function getVorinRichEditorScrollbarCss() {
+    const dark = document.documentElement.classList.contains("dark");
+    const track = dark ? "#0b1426" : "#edf1f5";
+    const thumb = dark ? "#d8c29a" : "#52637d";
+    const hover = dark ? "#f1e0bf" : "#30425f";
+
+    return `
+        :root, body {
+            scrollbar-color: ${thumb} ${track};
+            scrollbar-width: thin;
+        }
+        :root::-webkit-scrollbar, body::-webkit-scrollbar {
+            height: 11px;
+            width: 11px;
+        }
+        :root::-webkit-scrollbar-track, body::-webkit-scrollbar-track {
+            background: ${track};
+        }
+        :root::-webkit-scrollbar-thumb, body::-webkit-scrollbar-thumb {
+            background: ${thumb};
+            border: 3px solid ${track};
+            border-radius: 999px;
+            min-height: 42px;
+        }
+        :root::-webkit-scrollbar-thumb:hover, body::-webkit-scrollbar-thumb:hover {
+            background: ${hover};
+        }
+        :root::-webkit-scrollbar-corner, body::-webkit-scrollbar-corner {
+            background: ${track};
+        }
+    `;
+}
+
+function skinVorinRichEditorIframe(iframe) {
+    try {
+        const iframeDocument = iframe.contentDocument;
+
+        if (!iframeDocument?.head) {
+            return;
+        }
+
+        let style = iframeDocument.getElementById(VORIN_RICH_EDITOR_SCROLLBAR_STYLE_ID);
+
+        if (!style) {
+            style = iframeDocument.createElement("style");
+            style.id = VORIN_RICH_EDITOR_SCROLLBAR_STYLE_ID;
+            iframeDocument.head.appendChild(style);
+        }
+
+        style.textContent = getVorinRichEditorScrollbarCss();
+    } catch {}
+}
+
+function setupVorinRichEditorScrollbars() {
+    document.querySelectorAll("iframe.tox-edit-area__iframe").forEach((iframe) => {
+        if (iframe.dataset.vorinScrollbarBound !== "true") {
+            iframe.dataset.vorinScrollbarBound = "true";
+            iframe.addEventListener("load", () => skinVorinRichEditorIframe(iframe));
+        }
+
+        skinVorinRichEditorIframe(iframe);
+    });
+}
+
+window.addEventListener("vorin:themechange", setupVorinRichEditorScrollbars);
+
 function scheduleVorinEnhancements() {
     window.clearTimeout(window.__vorinEnhanceTimer);
     window.__vorinEnhanceTimer = window.setTimeout(() => {
@@ -1415,6 +1677,10 @@ function scheduleVorinEnhancements() {
         setupVorinFileInputs();
         setupVorinNumberInputs();
         setupVorinMediaCards();
+        enhanceVorinFileInputs();
+        enhanceVorinNumberInputs();
+        enhanceVorinKeyValueEditors();
+        setupVorinRichEditorScrollbars();
     }, 60);
 }
 
@@ -1429,8 +1695,8 @@ function setupVorinEnhancementObserver() {
                 (node) =>
                     node.nodeType === 1 &&
                     (
-                        node.matches?.("select, input, p.datetime, .related-widget-wrapper, .vorin-admin-media-card__frame img") ||
-                        node.querySelector?.("select, input, p.datetime, .related-widget-wrapper, .vorin-admin-media-card__frame img")
+                        node.matches?.('select, input, textarea[data-vorin-key-value-editor="true"], p.datetime, .related-widget-wrapper, .vorin-admin-media-card__frame img, iframe.tox-edit-area__iframe') ||
+                        node.querySelector?.('select, input, textarea[data-vorin-key-value-editor="true"], p.datetime, .related-widget-wrapper, .vorin-admin-media-card__frame img, iframe.tox-edit-area__iframe')
                     )
             )
         );
@@ -1491,9 +1757,14 @@ window.addEventListener("DOMContentLoaded", () => {
     setupVorinSidebarToggle();
     setupVorinMenus();
     setupVorinHistoryButtons();
+    setupVorinStickyActionBar();
     setupVorinQuestionnaireBuilder();
     setupVorinAutoSlug();
     setupVorinMediaCards();
+    enhanceVorinFileInputs();
+    enhanceVorinNumberInputs();
+    enhanceVorinKeyValueEditors();
+    setupVorinRichEditorScrollbars();
     setupVorinAutocompleteFields();
     setupVorinPlainSelects();
     setupVorinBulkActions();
@@ -1509,11 +1780,13 @@ window.addEventListener("DOMContentLoaded", () => {
     window.setTimeout(setupVorinBulkActions, 120);
     window.setTimeout(setupVorinFileInputs, 120);
     window.setTimeout(setupVorinNumberInputs, 120);
+    window.setTimeout(setupVorinRichEditorScrollbars, 120);
     window.setTimeout(setupVorinAutocompleteFields, 500);
     window.setTimeout(setupVorinPlainSelects, 500);
     window.setTimeout(setupVorinBulkActions, 500);
     window.setTimeout(setupVorinFileInputs, 500);
     window.setTimeout(setupVorinNumberInputs, 500);
+    window.setTimeout(setupVorinRichEditorScrollbars, 500);
     window.setTimeout(enhanceVorinSplitDateTimeFields, 120);
     window.setTimeout(setupVorinDateTimeInputs, 120);
     window.setTimeout(setupVorinTimeSelects, 180);
@@ -1526,6 +1799,7 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 window.addEventListener("load", () => {
+    setupVorinStickyActionBar();
     setupVorinAutocompleteFields();
     setupVorinPlainSelects();
     setupVorinBulkActions();
@@ -1534,5 +1808,7 @@ window.addEventListener("load", () => {
     enhanceVorinSplitDateTimeFields();
     setupVorinDateTimeInputs();
     setupVorinTimeSelects();
+    enhanceVorinKeyValueEditors();
+    setupVorinRichEditorScrollbars();
     setupVorinEnhancementObserver();
 });

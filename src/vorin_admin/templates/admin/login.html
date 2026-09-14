@@ -8,7 +8,9 @@
     <title>{{ title }} | {{ site_title|default:panel_settings.site_title }}</title>
     <link rel="icon" type="image/png" href="{% versioned_static panel_settings.branding.favicon %}">
     <link rel="stylesheet" href="{% versioned_static 'vorin_admin/css/vorin_panel.css' %}">
+    <link rel="stylesheet" href="{% versioned_static 'vorin_admin/css/password_visibility.css' %}">
     {{ form.media }}
+    <script src="{% versioned_static 'vorin_admin/js/password_visibility.js' %}" defer></script>
 </head>
 <body class="vorin-login-page">
     <div class="vorin-login-shell">
