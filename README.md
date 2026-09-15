@@ -15,6 +15,20 @@ This package is designed to provide a configurable admin foundation that can be 
 - A self-contained theme layer that does not depend on `django-unfold`
 - An `example_project/` you can run locally and copy from
 
+### Inline action buttons
+
+Use `.vorin-admin-action` for inline admin actions. Legacy modifiers such as
+`--primary`, `--success`, `--info` and `--accent` follow the active button theme;
+they do not introduce separate gradients. `--ghost` remains an outline action.
+Filled action links preserve their text colour and remove link underlines in
+normal, visited, hover and focus states. Keyboard focus has a visible outline.
+Use `--ghost` for secondary inline actions so one row has a clear primary action.
+
+Projects can supply `--vorin-action-bg`, `--vorin-action-hover-bg`,
+`--vorin-action-fg` and `--vorin-action-radius`. Otherwise the package uses
+Django's `--button-bg`, `--button-hover-bg` and `--button-fg`. Keep project brand
+values in the consuming project's stylesheet, and maintain the behavior here.
+
 ### Local setup
 
 ```bash

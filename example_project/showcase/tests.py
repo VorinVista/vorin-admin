@@ -2,6 +2,7 @@ from pathlib import Path
 
 from django.contrib.auth import get_user_model
 from django.contrib.staticfiles import finders
+from django.template.loader import get_template
 from django.test import RequestFactory, TestCase, override_settings
 
 from vorin_admin.apps import _configured_callback
@@ -16,6 +17,44 @@ def project_dashboard_callback(request, context):
 
 
 class AdminLayoutStyleTests(TestCase):
+    def test_inline_actions_use_the_active_button_theme_without_gradients(self):
+        stylesheet = Path(finders.find("vorin_admin/css/vorin_panel.css")).read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("--vorin-action-bg, var(--button-bg", stylesheet)
+        self.assertIn("--vorin-action-hover-bg, var(--button-hover-bg", stylesheet)
+        self.assertIn(".vorin-admin-action:focus-visible", stylesheet)
+        self.assertIn("min-height: 2.3rem;", stylesheet)
+        self.assertIn("--vorin-action-ghost-fg", stylesheet)
+
+    def test_questionnaire_builder_controls_have_a_responsive_grid(self):
+        stylesheet = Path(finders.find("vorin_admin/css/vorin_panel.css")).read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn(".qt-card-fields", stylesheet)
+        self.assertIn("grid-template-columns: repeat(2, minmax(0, 1fr));", stylesheet)
+        self.assertIn(".qt-control--wide", stylesheet)
+        self.assertIn("max-width: none !important;", stylesheet)
+        self.assertIn("min-height: 7rem;", stylesheet)
+        self.assertIn("@media (max-width: 760px)", stylesheet)
+        action_block = stylesheet[
+            stylesheet.index(".vorin-admin-action {"):
+            stylesheet.index(".vorin-admin-action--ghost {")
+        ]
+        self.assertNotIn("linear-gradient", action_block)
+
+    def test_change_forms_remove_the_global_history_action(self):
+        template_path = Path(
+            get_template("admin/change_form_object_tools.html").origin.name
+        )
+        template = template_path.read_text(encoding="utf-8")
+
+        self.assertIn('class="viewsitelink"', template)
+        self.assertNotIn("admin_urlname:'history'", template)
+        self.assertNotIn('class="historylink"', template)
+
     def test_login_password_visibility_control_is_packaged(self):
         stylesheet = Path(
             finders.find("vorin_admin/css/password_visibility.css")
@@ -72,6 +111,29 @@ class AdminLayoutStyleTests(TestCase):
         self.assertIn("VORIN_RICH_EDITOR_SCROLLBAR_STYLE_ID", script)
         self.assertIn("iframe.tox-edit-area__iframe", script)
         self.assertIn(":root::-webkit-scrollbar-thumb", script)
+
+    def test_bulk_actions_keep_one_native_select_and_bind_once(self):
+        stylesheet = Path(finders.find("vorin_admin/css/vorin_panel.css")).read_text(
+            encoding="utf-8"
+        )
+        script = Path(finders.find("vorin_admin/js/vorin_panel.js")).read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn('select.name === "action"', script)
+        self.assertIn('select.closest(".vorin-bulk-actions")', script)
+        self.assertIn('select.dataset.vorinBulkActionBound !== "1"', script)
+        self.assertIn('select.dataset.vorinBulkActionBound = "1"', script)
+        self.assertIn(
+            '.vorin-bulk-actions__field > .select2-container', stylesheet
+        )
+        self.assertIn(
+            '.vorin-bulk-actions__field > select[name="action"]', stylesheet
+        )
+        self.assertIn('background-position: right 1rem center;', stylesheet)
+        self.assertIn('input[type="checkbox"].action-select', stylesheet)
+        self.assertIn('input[type="checkbox"]#action-toggle', stylesheet)
+        self.assertIn('place-content: center;', stylesheet)
 
 
 class ConfiguredDashboardTests(TestCase):

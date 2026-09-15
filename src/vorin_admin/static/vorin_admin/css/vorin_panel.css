@@ -1862,18 +1862,49 @@ body.vorin-admin-shell.change-list .vorin-bulk-actions__submit {
 }
 
 .change-list .actions select {
+    appearance: none;
     background: rgba(255, 255, 255, 0.98);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%2366788f' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-position: right 1rem center;
+    background-repeat: no-repeat;
+    background-size: 1rem;
     border: 1px solid rgba(1, 21, 56, 0.12);
     border-radius: 0.9rem;
     color: #0f172a;
+    cursor: pointer;
     min-height: 2.9rem;
     min-width: 12rem;
-    padding: 0.7rem 0.9rem;
+    padding: 0.7rem 2.75rem 0.7rem 0.9rem;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
     width: 100%;
+}
+
+.change-list .actions select:focus {
+    border-color: rgba(241, 112, 32, 0.62);
+    box-shadow: 0 0 0 3px rgba(241, 112, 32, 0.14);
+    outline: none;
+}
+
+.change-list .vorin-bulk-actions__field > .select2-container {
+    display: none !important;
+}
+
+.change-list .vorin-bulk-actions__field > select[name="action"] {
+    clip: auto !important;
+    clip-path: none !important;
+    height: auto !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    position: static !important;
+    white-space: normal !important;
 }
 
 .dark .change-list .actions select {
     background: rgba(255, 255, 255, 0.05);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%23d9e2ec' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-position: right 1rem center;
+    background-repeat: no-repeat;
+    background-size: 1rem;
     border-color: rgba(217, 226, 236, 0.12);
     color: #f8fbff;
 }
@@ -1935,6 +1966,75 @@ html.dark body.vorin-admin-shell.change-list .actions select option {
     border-collapse: collapse;
     table-layout: fixed;
     width: 100%;
+}
+
+.change-list #result_list th.action-checkbox-column,
+.change-list #result_list td.action-checkbox {
+    text-align: center;
+    width: 3.25rem;
+}
+
+.change-list #result_list input[type="checkbox"].action-select,
+.change-list #result_list input[type="checkbox"]#action-toggle {
+    appearance: none;
+    background: rgba(255, 255, 255, 0.98);
+    border: 1.5px solid rgba(1, 21, 56, 0.24);
+    border-radius: 0.38rem;
+    cursor: pointer;
+    display: inline-grid;
+    height: 1.2rem;
+    margin: 0;
+    place-content: center;
+    transition: background-color 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+    vertical-align: middle;
+    width: 1.2rem;
+}
+
+.change-list #result_list input[type="checkbox"].action-select::before,
+.change-list #result_list input[type="checkbox"]#action-toggle::before {
+    border-bottom: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    content: "";
+    height: 0.28rem;
+    transform: rotate(-45deg) scale(0);
+    transform-origin: center;
+    transition: transform 0.14s ease;
+    width: 0.58rem;
+}
+
+.change-list #result_list input[type="checkbox"].action-select:checked,
+.change-list #result_list input[type="checkbox"]#action-toggle:checked {
+    background: var(--vorin-accent);
+    border-color: var(--vorin-accent);
+}
+
+.change-list #result_list input[type="checkbox"].action-select:checked::before,
+.change-list #result_list input[type="checkbox"]#action-toggle:checked::before {
+    transform: rotate(-45deg) scale(1);
+}
+
+.change-list #result_list input[type="checkbox"].action-select:focus-visible,
+.change-list #result_list input[type="checkbox"]#action-toggle:focus-visible {
+    box-shadow: 0 0 0 3px rgba(241, 112, 32, 0.2);
+    outline: none;
+}
+
+.change-list #result_list input[type="checkbox"].action-select:hover,
+.change-list #result_list input[type="checkbox"]#action-toggle:hover {
+    border-color: var(--vorin-accent);
+    transform: translateY(-1px);
+}
+
+.dark .change-list #result_list input[type="checkbox"].action-select,
+.dark .change-list #result_list input[type="checkbox"]#action-toggle {
+    background-color: rgba(255, 255, 255, 0.055);
+    border-color: rgba(217, 226, 236, 0.34);
+}
+
+.dark .change-list #result_list input[type="checkbox"].action-select:checked,
+.dark .change-list #result_list input[type="checkbox"]#action-toggle:checked {
+    background-color: var(--vorin-accent);
+    border-color: var(--vorin-accent);
 }
 
 .change-list #result_list thead th {
@@ -2351,49 +2451,56 @@ html.dark body.vorin-admin-shell.change-list #changelist .paginator {
 .vorin-admin-action {
     align-items: center;
     border: 1px solid transparent;
-    border-radius: 0.8rem;
-    color: #fff;
+    border-radius: var(--vorin-action-radius, 0.65rem);
+    background: var(--vorin-action-bg, var(--button-bg, #0b2d73));
+    color: var(--vorin-action-fg, var(--button-fg, #fff));
     display: inline-flex;
     font-size: 0.78rem;
     font-weight: 700;
     gap: 0.35rem;
     justify-content: center;
-    min-height: 2rem;
-    padding: 0.45rem 0.8rem;
+    min-height: 2.3rem;
+    padding: 0.55rem 0.85rem;
     text-decoration: none;
-    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
     white-space: nowrap;
 }
 
 .vorin-admin-action:hover {
-    box-shadow: 0 12px 28px rgb(1 21 56 / 0.12);
+    box-shadow: 0 8px 18px rgb(1 21 56 / 0.12);
     transform: translateY(-1px);
 }
 
-.vorin-admin-action--primary {
-    background: linear-gradient(135deg, #4f46e5, #0b2d73);
+/* Legacy semantic modifiers share the active admin button theme. */
+body.vorin-admin-shell .vorin-admin-action:not(.vorin-admin-action--ghost),
+body.vorin-admin-shell .vorin-admin-action:not(.vorin-admin-action--ghost):is(:link, :visited, :hover, :focus, :active) {
+    color: var(--vorin-action-fg, var(--button-fg, #fff)) !important;
+    text-decoration: none !important;
 }
 
-.vorin-admin-action--info {
-    background: linear-gradient(135deg, #1b7fa2, #0f5d77);
+.vorin-admin-action:not(.vorin-admin-action--ghost):is(:hover, :focus-visible) {
+    background: var(--vorin-action-hover-bg, var(--button-hover-bg, #082252));
 }
 
-.vorin-admin-action--neutral {
-    background: linear-gradient(135deg, #4a5a71, #344257);
-}
-
-.vorin-admin-action--success {
-    background: linear-gradient(135deg, #2f8f5b, #226341);
-}
-
-.vorin-admin-action--accent {
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+.vorin-admin-action:focus-visible {
+    outline: 2px solid var(--vorin-accent);
+    outline-offset: 3px;
 }
 
 .vorin-admin-action--ghost {
     background: transparent;
-    border-color: rgba(1, 21, 56, 0.14);
-    color: #4a5a71;
+    border-color: var(--vorin-action-border, var(--hairline-color, rgba(1, 21, 56, 0.2)));
+    color: var(--vorin-action-ghost-fg, var(--body-fg, #344257));
+}
+
+.vorin-admin-action--ghost:is(:link, :visited) {
+    color: var(--vorin-action-ghost-fg, var(--body-fg, #344257));
+}
+
+.vorin-admin-action--ghost:is(:hover, :focus-visible) {
+    background: var(--vorin-action-ghost-hover-bg, rgb(1 21 56 / 0.06));
+    border-color: var(--vorin-action-hover-bg, var(--button-hover-bg, #082252));
+    color: var(--vorin-action-ghost-fg, var(--body-fg, #344257));
 }
 
 .vorin-admin-icon-link {
@@ -4368,6 +4475,40 @@ body.vorin-admin-shell:not(.change-form):not(.change-list) #content-main .submit
     padding: 0.95rem 1rem 1rem;
 }
 
+.qt-card-fields {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-width: 0;
+}
+
+.qt-control {
+    display: grid;
+    gap: 0.45rem;
+    min-width: 0;
+}
+
+.qt-control--wide {
+    grid-column: 1 / -1;
+}
+
+.qt-control :is(input, textarea) {
+    box-sizing: border-box;
+    margin: 0;
+    max-width: none !important;
+    min-width: 0;
+    width: 100% !important;
+}
+
+.qt-control input {
+    min-height: 2.75rem;
+}
+
+.qt-control textarea {
+    min-height: 7rem;
+    resize: vertical;
+}
+
 .qt-card.off .qt-card-body {
     display: none;
 }
@@ -4378,7 +4519,13 @@ body.vorin-admin-shell:not(.change-form):not(.change-list) #content-main .submit
     font-size: 0.72rem;
     font-weight: 600;
     letter-spacing: 0.02em;
-    margin: 0.6rem 0 0.35rem;
+    margin: 0;
+    text-transform: none;
+}
+
+.qt-sub-label span {
+    font-weight: 400;
+    opacity: 0.78;
 }
 
 .qt-hint {
@@ -4393,6 +4540,24 @@ body.vorin-admin-shell:not(.change-form):not(.change-list) #content-main .submit
     font-size: 0.75rem;
     font-style: italic;
     margin: 0.4rem 0 0;
+}
+
+.qt-control .qt-card-note {
+    margin-top: 0;
+}
+
+@media (max-width: 760px) {
+    .qt-card-fields {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .qt-control--wide {
+        grid-column: auto;
+    }
+
+    .qt-card-body {
+        padding: 0.85rem;
+    }
 }
 
 .qt-section-note {

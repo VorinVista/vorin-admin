@@ -923,6 +923,13 @@ function shouldEnhanceVorinSelect(select) {
         return false;
     }
 
+    // Django's changelist actions already have their own form lifecycle.
+    // Wrapping this select in Select2 creates a second visual "Choose action"
+    // control and can leave the real field unchanged when Apply is pressed.
+    if (select.name === "action" && select.closest(".vorin-bulk-actions")) {
+        return false;
+    }
+
     if (select.multiple) {
         return false;
     }
@@ -1745,7 +1752,11 @@ function setupVorinBulkActions() {
             submit.disabled = !select.value;
         };
 
-        select.addEventListener("change", syncState);
+        if (select.dataset.vorinBulkActionBound !== "1") {
+            select.addEventListener("change", syncState);
+            select.dataset.vorinBulkActionBound = "1";
+        }
+
         syncState();
     });
 }
