@@ -2833,14 +2833,14 @@ body.vorin-admin-shell .vorin-admin-action:not(.vorin-admin-action--ghost):is(:l
 }
 
 html.dark body.vorin-admin-shell .vorin-surface :is(input.vorin-input, textarea.vorin-textarea)::placeholder {
-    color: #94a3b8 !important;
+    color: #94a3b8;
     opacity: 1;
 }
 
 html.dark body.vorin-admin-shell .vorin-surface :is(input.vorin-input, textarea.vorin-textarea, select.vorin-input) {
-    background: rgba(15, 23, 42, 0.82) !important;
-    border-color: rgba(148, 163, 184, 0.28) !important;
-    color: #f8fafc !important;
+    background: rgba(15, 23, 42, 0.82);
+    border-color: rgba(148, 163, 184, 0.28);
+    color: #f8fafc;
 }
 
 .vorin-field__help {
