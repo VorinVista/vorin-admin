@@ -150,8 +150,12 @@ class AdminLayoutStyleTests(TestCase):
         self.assertIn("data-vorin-avatar-editor", template)
         self.assertIn("vorin-avatar-editor__preview", template)
         self.assertIn("data-vorin-file-enhanced", template)
+        self.assertIn("avatar_library_image", template)
         self.assertNotIn("Currently:", template)
+        self.assertNotIn("Current image", template)
+        self.assertNotIn("Remove image", template)
         self.assertIn(".vorin-avatar-editor", stylesheet)
+        self.assertIn(".vorin-avatar-editor__library", stylesheet)
         self.assertIn("setupVorinAvatarEditors", script)
 
 

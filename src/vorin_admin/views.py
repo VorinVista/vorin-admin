@@ -66,6 +66,9 @@ def _avatar_widget_context(settings_form):
 
     return {
         "avatar_field": avatar_field,
+        "avatar_library_field": settings_form["avatar_library_image"]
+        if "avatar_library_image" in settings_form.fields
+        else None,
         "avatar_clear_name": widget.clear_checkbox_name(avatar_field.html_name),
         "avatar_clear_id": widget.clear_checkbox_id(avatar_field.id_for_label),
     }

@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from django import forms
 from django.apps import apps
+from django.contrib.auth import get_user_model
 
-from vorin_admin.profiles import sync_wagtail_profile_to_vorin_settings
+from vorin_admin.profiles import get_or_create_user_settings
 
 
 def install_wagtail_account_integration() -> bool:
@@ -23,6 +24,12 @@ def install_wagtail_account_integration() -> bool:
         return True
 
     class VorinWagtailAvatarPreferencesForm(AvatarPreferencesForm):
+        avatar_library_image = forms.ModelChoiceField(
+            queryset=get_user_model().objects.none(),
+            required=False,
+            label="Media library",
+        )
+
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             self._vorin_original_avatar_name = getattr(self.instance.avatar, "name", "") or ""
@@ -30,8 +37,26 @@ def install_wagtail_account_integration() -> bool:
                 {
                     "data-vorin-file-enhanced": "1",
                     "data-venuex-file-upload": "true",
+                    "data-venuex-enhanced": "true",
                 }
             )
+            image_model = self._wagtail_image_model()
+            if image_model:
+                self.fields["avatar_library_image"].queryset = image_model.objects.order_by("-created_at")
+            else:
+                self.fields.pop("avatar_library_image", None)
+
+        @staticmethod
+        def _wagtail_image_model():
+            if not apps.is_installed("wagtail.images"):
+                return None
+
+            try:
+                from wagtail.images import get_image_model
+            except ImportError:
+                return None
+
+            return get_image_model()
 
         def _clear_requested(self) -> bool:
             return bool(
@@ -41,16 +66,19 @@ def install_wagtail_account_integration() -> bool:
             )
 
         def save(self, commit=True):
-            profile = super().save(commit=commit)
+            profile = self.instance
 
             if commit:
-                avatar_name = getattr(profile.avatar, "name", "") or ""
-                should_sync = self._clear_requested() or avatar_name != self._vorin_original_avatar_name
-                if should_sync:
-                    sync_wagtail_profile_to_vorin_settings(
-                        profile,
-                        clear=self._clear_requested() or not avatar_name,
-                    )
+                user_settings = get_or_create_user_settings(profile.user)
+                library_image = self.cleaned_data.get("avatar_library_image")
+                uploaded_avatar = self.files.get(self.add_prefix("avatar"))
+
+                if uploaded_avatar:
+                    avatar_file = self.cleaned_data.get("avatar")
+                    user_settings.avatar.save(avatar_file.name, avatar_file, save=True)
+                elif library_image:
+                    user_settings.avatar.name = library_image.file.name
+                    user_settings.save(update_fields=["avatar", "updated_at"])
 
             return profile
 
