@@ -80,22 +80,35 @@
                     <p class="vorin-profile-preview__meta">{{ request.user.vorin_role_label }}</p>
 
                     <div
-                        class="vorin-avatar-editor__chooser"
+                        class="vorin-avatar-editor__modal"
                         id="vorin-avatar-editor-options"
-                        data-vorin-avatar-chooser
+                        data-vorin-avatar-modal
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="vorin-avatar-editor-title"
                         hidden>
-                        <label class="vorin-avatar-editor__choice" for="{{ avatar_field.id_for_label }}">
-                            {% trans "Upload from device" %}
-                        </label>
-                        {% if avatar_library_field %}
-                            <label
-                                class="vorin-avatar-editor__library"
-                                for="{{ avatar_library_field.id_for_label }}"
-                                data-vorin-avatar-library>
-                                <span>{% trans "Media library" %}</span>
-                                {{ avatar_library_field }}
-                            </label>
-                        {% endif %}
+                        <div class="vorin-avatar-editor__modal-panel" data-vorin-avatar-modal-panel>
+                            <div class="vorin-avatar-editor__modal-header">
+                                <h3 id="vorin-avatar-editor-title">{% trans "Change image" %}</h3>
+                                <button type="button" class="vorin-avatar-editor__modal-close" data-vorin-avatar-close>
+                                    {% trans "Close" %}
+                                </button>
+                            </div>
+                            <div class="vorin-avatar-editor__modal-options">
+                                <button type="button" class="vorin-avatar-editor__choice" data-vorin-avatar-upload>
+                                    {% trans "Upload from device" %}
+                                </button>
+                                {% if avatar_library_field %}
+                                    <label
+                                        class="vorin-avatar-editor__library"
+                                        for="{{ avatar_library_field.id_for_label }}"
+                                        data-vorin-avatar-library>
+                                        <span>{% trans "Media library" %}</span>
+                                        {{ avatar_library_field }}
+                                    </label>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
 
                     <input

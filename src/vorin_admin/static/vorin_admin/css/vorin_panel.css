@@ -2873,11 +2873,13 @@ html.dark body.vorin-admin-shell .vorin-surface :is(input.vorin-input, textarea.
     background: rgba(1, 21, 56, 0.035);
     border: 1px solid rgba(1, 21, 56, 0.1);
     border-radius: 1rem;
-    display: grid;
+    display: inline-grid;
     gap: 1rem;
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: auto auto;
     margin-bottom: 1.25rem;
+    max-width: 100%;
     padding: 1rem;
+    width: fit-content;
 }
 
 .dark .vorin-avatar-editor {
@@ -2938,27 +2940,74 @@ html.dark body.vorin-admin-shell .vorin-surface :is(input.vorin-input, textarea.
     margin: 0;
 }
 
-.vorin-avatar-editor__chooser {
-    align-items: stretch;
-    background: rgba(255, 255, 255, 0.92);
-    border: 1px solid rgba(1, 21, 56, 0.12);
-    border-radius: 0.95rem;
-    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.14);
-    display: grid;
-    gap: 0.75rem;
-    margin-top: 0.15rem;
-    max-width: 28rem;
-    padding: 0.8rem;
-}
-
-.vorin-avatar-editor__chooser[hidden] {
+.vorin-avatar-editor__modal[hidden] {
     display: none;
 }
 
-.dark .vorin-avatar-editor__chooser {
-    background: rgba(2, 13, 35, 0.98);
+.vorin-avatar-editor__modal {
+    align-items: center;
+    background: rgba(1, 8, 20, 0.64);
+    display: grid;
+    inset: 0;
+    justify-items: center;
+    padding: 1.25rem;
+    position: fixed;
+    z-index: 4000;
+}
+
+.vorin-avatar-editor__modal-panel {
+    background: #ffffff;
+    border: 1px solid rgba(1, 21, 56, 0.12);
+    border-radius: 1rem;
+    box-shadow: 0 24px 70px rgba(15, 23, 42, 0.28);
+    display: grid;
+    gap: 1rem;
+    max-width: min(100%, 30rem);
+    padding: 1rem;
+    width: 100%;
+}
+
+.dark .vorin-avatar-editor__modal-panel {
+    background: #020d23;
     border-color: rgba(217, 226, 236, 0.14);
-    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.32);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.36);
+}
+
+.vorin-avatar-editor__modal-header {
+    align-items: center;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+.vorin-avatar-editor__modal-header h3 {
+    color: #0f172a;
+    font-size: 1.05rem;
+    margin: 0;
+}
+
+.dark .vorin-avatar-editor__modal-header h3 {
+    color: #f8fafc;
+}
+
+.vorin-avatar-editor__modal-close {
+    background: transparent;
+    border: 0;
+    color: #66788f;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 0.35rem 0.45rem;
+}
+
+.dark .vorin-avatar-editor__modal-close {
+    color: #cbd5e1;
+}
+
+.vorin-avatar-editor__modal-options {
+    display: grid;
+    gap: 0.75rem;
 }
 
 .vorin-avatar-editor__choice {
@@ -3056,6 +3105,14 @@ html.dark body.vorin-admin-shell .vorin-surface :is(input.vorin-input, textarea.
 
 .vorin-avatar-editor.is-clearing {
     opacity: 0.68;
+}
+
+@media (max-width: 520px) {
+    .vorin-avatar-editor {
+        grid-template-columns: 1fr;
+        justify-items: start;
+        width: 100%;
+    }
 }
 
 .vorin-primary-button {

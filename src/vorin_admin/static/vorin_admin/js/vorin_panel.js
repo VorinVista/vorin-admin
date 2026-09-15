@@ -1770,7 +1770,9 @@ function setupVorinAvatarEditors(root = document) {
         const input = editor.querySelector('input[type="file"]');
         const preview = editor.querySelector("[data-vorin-avatar-preview] .vorin-avatar");
         const trigger = editor.querySelector("[data-vorin-avatar-trigger]");
-        const chooser = editor.querySelector("[data-vorin-avatar-chooser]");
+        const modal = editor.querySelector("[data-vorin-avatar-modal]");
+        const modalPanel = editor.querySelector("[data-vorin-avatar-modal-panel]");
+        const uploadButton = editor.querySelector("[data-vorin-avatar-upload]");
         const librarySelect = editor.querySelector("[data-vorin-avatar-library] select");
         const filename = editor.querySelector("[data-vorin-avatar-filename]");
         const clear = editor.querySelector("[data-vorin-avatar-clear]");
@@ -1781,38 +1783,53 @@ function setupVorinAvatarEditors(root = document) {
 
         editor.dataset.vorinAvatarEditorBound = "1";
 
-        const setChooserOpen = (open) => {
-            if (!chooser || !trigger) return;
+        const setModalOpen = (open) => {
+            if (!modal || !trigger) return;
+            const wasOpen = !modal.hidden;
+            if (!open && !wasOpen) return;
 
-            chooser.hidden = !open;
+            modal.hidden = !open;
             editor.classList.toggle("is-choosing-avatar", open);
             trigger.setAttribute("aria-expanded", open ? "true" : "false");
             if (open) {
-                chooser.scrollIntoView({ block: "center", inline: "nearest" });
+                window.requestAnimationFrame(() => {
+                    const focusTarget = uploadButton || librarySelect || modalPanel;
+                    focusTarget?.focus?.({ preventScroll: true });
+                });
+            } else {
+                trigger.focus({ preventScroll: true });
             }
         };
 
         trigger?.addEventListener("click", (event) => {
             event.preventDefault();
-            setChooserOpen(Boolean(chooser?.hidden));
+            setModalOpen(Boolean(modal?.hidden));
         });
 
-        document.addEventListener("click", (event) => {
-            if (!editor.contains(event.target)) {
-                setChooserOpen(false);
+        modal?.addEventListener("click", (event) => {
+            if (event.target === modal) {
+                setModalOpen(false);
             }
         });
 
-        editor.addEventListener("keydown", (event) => {
+        modal?.querySelectorAll("[data-vorin-avatar-close]").forEach((button) => {
+            button.addEventListener("click", () => setModalOpen(false));
+        });
+
+        uploadButton?.addEventListener("click", () => {
+            input.click();
+        });
+
+        document.addEventListener("keydown", (event) => {
             if (event.key === "Escape") {
-                setChooserOpen(false);
+                setModalOpen(false);
             }
         });
 
         librarySelect?.addEventListener("change", () => {
             if (librarySelect.value) {
                 input.value = "";
-                setChooserOpen(false);
+                setModalOpen(false);
             }
         });
 
@@ -1837,7 +1854,7 @@ function setupVorinAvatarEditors(root = document) {
             image.onload = () => URL.revokeObjectURL(image.src);
 
             preview.replaceChildren(image);
-            setChooserOpen(false);
+            setModalOpen(false);
         });
 
         clear?.addEventListener("change", () => {
