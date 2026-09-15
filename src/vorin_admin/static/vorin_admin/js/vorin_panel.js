@@ -1769,6 +1769,9 @@ function setupVorinAvatarEditors(root = document) {
 
         const input = editor.querySelector('input[type="file"]');
         const preview = editor.querySelector("[data-vorin-avatar-preview] .vorin-avatar");
+        const trigger = editor.querySelector("[data-vorin-avatar-trigger]");
+        const chooser = editor.querySelector("[data-vorin-avatar-chooser]");
+        const librarySelect = editor.querySelector("[data-vorin-avatar-library] select");
         const filename = editor.querySelector("[data-vorin-avatar-filename]");
         const clear = editor.querySelector("[data-vorin-avatar-clear]");
 
@@ -1778,6 +1781,38 @@ function setupVorinAvatarEditors(root = document) {
 
         editor.dataset.vorinAvatarEditorBound = "1";
 
+        const setChooserOpen = (open) => {
+            if (!chooser || !trigger) return;
+
+            chooser.hidden = !open;
+            editor.classList.toggle("is-choosing-avatar", open);
+            trigger.setAttribute("aria-expanded", open ? "true" : "false");
+        };
+
+        trigger?.addEventListener("click", (event) => {
+            event.preventDefault();
+            setChooserOpen(Boolean(chooser?.hidden));
+        });
+
+        document.addEventListener("click", (event) => {
+            if (!editor.contains(event.target)) {
+                setChooserOpen(false);
+            }
+        });
+
+        editor.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") {
+                setChooserOpen(false);
+            }
+        });
+
+        librarySelect?.addEventListener("change", () => {
+            if (librarySelect.value) {
+                input.value = "";
+                setChooserOpen(false);
+            }
+        });
+
         input.addEventListener("change", () => {
             const file = input.files?.[0];
             if (!file) {
@@ -1785,6 +1820,7 @@ function setupVorinAvatarEditors(root = document) {
                 return;
             }
 
+            if (librarySelect) librarySelect.value = "";
             if (filename) filename.textContent = file.name;
             if (clear) {
                 clear.checked = false;
@@ -1798,6 +1834,7 @@ function setupVorinAvatarEditors(root = document) {
             image.onload = () => URL.revokeObjectURL(image.src);
 
             preview.replaceChildren(image);
+            setChooserOpen(false);
         });
 
         clear?.addEventListener("change", () => {

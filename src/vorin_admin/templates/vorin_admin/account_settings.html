@@ -62,10 +62,16 @@
             </div>
 
             <div class="vorin-avatar-editor" data-vorin-avatar-editor>
-                <label class="vorin-avatar-editor__preview" for="{{ avatar_field.id_for_label }}" data-vorin-avatar-preview>
+                <button
+                    type="button"
+                    class="vorin-avatar-editor__preview"
+                    data-vorin-avatar-preview
+                    data-vorin-avatar-trigger
+                    aria-expanded="false"
+                    aria-controls="vorin-avatar-editor-options">
                     {% include "vorin_admin/includes/avatar.html" with user=request.user circle=True %}
                     <span class="vorin-avatar-editor__overlay">{% trans "Change image" %}</span>
-                </label>
+                </button>
 
                 <div class="vorin-avatar-editor__content">
                     <p class="vorin-profile-preview__name">
@@ -73,12 +79,19 @@
                     </p>
                     <p class="vorin-profile-preview__meta">{{ request.user.vorin_role_label }}</p>
 
-                    <div class="vorin-avatar-editor__actions">
-                        <label class="vorin-avatar-editor__button" for="{{ avatar_field.id_for_label }}">
-                            {% trans "Change image" %}
+                    <div
+                        class="vorin-avatar-editor__chooser"
+                        id="vorin-avatar-editor-options"
+                        data-vorin-avatar-chooser
+                        hidden>
+                        <label class="vorin-avatar-editor__choice" for="{{ avatar_field.id_for_label }}">
+                            {% trans "Upload from device" %}
                         </label>
                         {% if avatar_library_field %}
-                            <label class="vorin-avatar-editor__library" for="{{ avatar_library_field.id_for_label }}">
+                            <label
+                                class="vorin-avatar-editor__library"
+                                for="{{ avatar_library_field.id_for_label }}"
+                                data-vorin-avatar-library>
                                 <span>{% trans "Media library" %}</span>
                                 {{ avatar_library_field }}
                             </label>
