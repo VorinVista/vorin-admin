@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from django.contrib.auth import get_user_model
+from django.core.files.base import ContentFile
 from django.core.exceptions import ObjectDoesNotExist
 
 
@@ -19,6 +22,66 @@ def get_or_create_user_settings(user):
 
     settings, _ = VorinUserSettings.objects.get_or_create(user=user)
     return settings
+
+
+def _field_name(field_file) -> str:
+    return getattr(field_file, "name", "") or ""
+
+
+def _copy_field_file(source, target) -> bool:
+    source_name = _field_name(source)
+    if not source_name:
+        return False
+
+    filename = Path(source_name).name
+    source.open("rb")
+    try:
+        target.save(filename, ContentFile(source.read()), save=False)
+    finally:
+        source.close()
+    return True
+
+
+def _save_fields(instance, fields: list[str]) -> None:
+    try:
+        instance.save(update_fields=fields)
+    except ValueError:
+        instance.save()
+
+
+def sync_vorin_settings_to_wagtail_profile(user_settings, *, clear: bool = False):
+    try:
+        from wagtail.users.models import UserProfile
+    except ImportError:
+        return None
+
+    profile = UserProfile.get_for_user(user_settings.user)
+
+    if clear or not _field_name(user_settings.avatar):
+        if _field_name(profile.avatar):
+            profile.avatar = ""
+            _save_fields(profile, ["avatar"])
+        return profile
+
+    if _copy_field_file(user_settings.avatar, profile.avatar):
+        _save_fields(profile, ["avatar"])
+
+    return profile
+
+
+def sync_wagtail_profile_to_vorin_settings(profile, *, clear: bool = False):
+    user_settings = get_or_create_user_settings(profile.user)
+
+    if clear or not _field_name(profile.avatar):
+        if _field_name(user_settings.avatar):
+            user_settings.avatar = None
+            _save_fields(user_settings, ["avatar", "updated_at"])
+        return user_settings
+
+    if _copy_field_file(profile.avatar, user_settings.avatar):
+        _save_fields(user_settings, ["avatar", "updated_at"])
+
+    return user_settings
 
 
 def _avatar_url(user) -> str | None:

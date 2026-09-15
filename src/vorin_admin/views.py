@@ -60,6 +60,17 @@ def _admin_model_changelist_url(model) -> str | None:
     return _safe_reverse(f"admin:{opts.app_label}_{opts.model_name}_changelist")
 
 
+def _avatar_widget_context(settings_form):
+    avatar_field = settings_form["avatar"]
+    widget = avatar_field.field.widget
+
+    return {
+        "avatar_field": avatar_field,
+        "avatar_clear_name": widget.clear_checkbox_name(avatar_field.html_name),
+        "avatar_clear_id": widget.clear_checkbox_id(avatar_field.id_for_label),
+    }
+
+
 def _build_settings_sections(request, panel: dict[str, object]) -> list[dict[str, object]]:
     app_list = admin.site.get_app_list(request)
     installed_areas = []
@@ -209,5 +220,6 @@ def account_settings_view(request):
         "user_form": user_form,
         "settings_form": settings_form,
         "user_settings": user_settings,
+        **_avatar_widget_context(settings_form),
     }
     return TemplateResponse(request, "vorin_admin/account_settings.html", context)

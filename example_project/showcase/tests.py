@@ -135,6 +135,25 @@ class AdminLayoutStyleTests(TestCase):
         self.assertIn('input[type="checkbox"]#action-toggle', stylesheet)
         self.assertIn('place-content: center;', stylesheet)
 
+    def test_account_avatar_editor_replaces_raw_file_widget(self):
+        template_path = Path(
+            get_template("vorin_admin/account_settings.html").origin.name
+        )
+        template = template_path.read_text(encoding="utf-8")
+        stylesheet = Path(finders.find("vorin_admin/css/vorin_panel.css")).read_text(
+            encoding="utf-8"
+        )
+        script = Path(finders.find("vorin_admin/js/vorin_panel.js")).read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("data-vorin-avatar-editor", template)
+        self.assertIn("vorin-avatar-editor__preview", template)
+        self.assertIn("data-vorin-file-enhanced", template)
+        self.assertNotIn("Currently:", template)
+        self.assertIn(".vorin-avatar-editor", stylesheet)
+        self.assertIn("setupVorinAvatarEditors", script)
+
 
 class ConfiguredDashboardTests(TestCase):
     @override_settings(

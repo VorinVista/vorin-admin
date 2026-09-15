@@ -4,6 +4,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 
 from vorin_admin.models import VorinUserSettings
+from vorin_admin.profiles import sync_vorin_settings_to_wagtail_profile
 
 User = get_user_model()
 
@@ -53,6 +54,7 @@ class VorinUserSettingsForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self._original_avatar_name = getattr(self.instance.avatar, "name", "") or ""
 
         for name, field in self.fields.items():
             if name == "bio":
@@ -60,3 +62,18 @@ class VorinUserSettingsForm(forms.ModelForm):
 
             field.widget.attrs.setdefault("placeholder", field.label)
             _merge_classes(field.widget, "vorin-input")
+
+        self.fields["avatar"].widget.attrs["data-vorin-file-enhanced"] = "1"
+
+    def save(self, commit=True):
+        user_settings = super().save(commit=commit)
+
+        if commit:
+            avatar_name = getattr(user_settings.avatar, "name", "") or ""
+            if avatar_name != self._original_avatar_name:
+                sync_vorin_settings_to_wagtail_profile(
+                    user_settings,
+                    clear=not avatar_name,
+                )
+
+        return user_settings

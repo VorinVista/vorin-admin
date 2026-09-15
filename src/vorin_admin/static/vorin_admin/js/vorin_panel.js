@@ -1761,6 +1761,55 @@ function setupVorinBulkActions() {
     });
 }
 
+function setupVorinAvatarEditors(root = document) {
+    root.querySelectorAll?.("[data-vorin-avatar-editor]").forEach((editor) => {
+        if (editor.dataset.vorinAvatarEditorBound === "1") {
+            return;
+        }
+
+        const input = editor.querySelector('input[type="file"]');
+        const preview = editor.querySelector("[data-vorin-avatar-preview] .vorin-avatar");
+        const filename = editor.querySelector("[data-vorin-avatar-filename]");
+        const clear = editor.querySelector("[data-vorin-avatar-clear]");
+
+        if (!input || !preview) {
+            return;
+        }
+
+        editor.dataset.vorinAvatarEditorBound = "1";
+
+        input.addEventListener("change", () => {
+            const file = input.files?.[0];
+            if (!file) {
+                if (filename) filename.textContent = "No image selected";
+                return;
+            }
+
+            if (filename) filename.textContent = file.name;
+            if (clear) {
+                clear.checked = false;
+                editor.classList.remove("is-clearing");
+            }
+
+            const image = document.createElement("img");
+            image.className = "vorin-avatar__image";
+            image.alt = "Selected profile image preview";
+            image.src = URL.createObjectURL(file);
+            image.onload = () => URL.revokeObjectURL(image.src);
+
+            preview.replaceChildren(image);
+        });
+
+        clear?.addEventListener("change", () => {
+            editor.classList.toggle("is-clearing", clear.checked);
+            if (clear.checked) {
+                input.value = "";
+                if (filename) filename.textContent = "Image will be removed";
+            }
+        });
+    });
+}
+
 window.addEventListener("DOMContentLoaded", () => {
     cleanupVorinBrowserState();
     setupVorinThemeSwitch();
@@ -1784,6 +1833,7 @@ window.addEventListener("DOMContentLoaded", () => {
     enhanceVorinSplitDateTimeFields();
     setupVorinDateTimeInputs();
     setupVorinTimeSelects();
+    setupVorinAvatarEditors();
     setupVorinThemeMediaWatcher();
     setupVorinEnhancementObserver();
     window.setTimeout(setupVorinAutocompleteFields, 120);
@@ -1807,6 +1857,7 @@ window.addEventListener("DOMContentLoaded", () => {
     window.setTimeout(enhanceVorinSplitDateTimeFields, 500);
     window.setTimeout(setupVorinDateTimeInputs, 500);
     window.setTimeout(setupVorinTimeSelects, 700);
+    window.setTimeout(setupVorinAvatarEditors, 120);
 });
 
 window.addEventListener("load", () => {
@@ -1819,6 +1870,7 @@ window.addEventListener("load", () => {
     enhanceVorinSplitDateTimeFields();
     setupVorinDateTimeInputs();
     setupVorinTimeSelects();
+    setupVorinAvatarEditors();
     enhanceVorinKeyValueEditors();
     setupVorinRichEditorScrollbars();
     setupVorinEnhancementObserver();

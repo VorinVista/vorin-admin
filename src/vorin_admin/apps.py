@@ -25,8 +25,10 @@ class VorinAdminConfig(AppConfig):
         from vorin_admin.dashboard import dashboard_callback, global_context
         from vorin_admin.navigation import build_sidebar_navigation
         from vorin_admin.profiles import patch_user_model
+        from vorin_admin.wagtail import install_wagtail_account_integration
 
         patch_user_model()
+        install_wagtail_account_integration()
 
         site = admin.site
 

@@ -61,30 +61,62 @@
                 </div>
             </div>
 
-            <div class="vorin-profile-preview">
-                <div class="vorin-profile-preview__avatar">
+            <div class="vorin-avatar-editor" data-vorin-avatar-editor>
+                <label class="vorin-avatar-editor__preview" for="{{ avatar_field.id_for_label }}" data-vorin-avatar-preview>
                     {% include "vorin_admin/includes/avatar.html" with user=request.user circle=True %}
-                </div>
-                <div>
+                    <span class="vorin-avatar-editor__overlay">{% trans "Change image" %}</span>
+                </label>
+
+                <div class="vorin-avatar-editor__content">
                     <p class="vorin-profile-preview__name">
                         {{ request.user.get_full_name|default:request.user.get_username }}
                     </p>
                     <p class="vorin-profile-preview__meta">{{ request.user.vorin_role_label }}</p>
+
+                    <div class="vorin-avatar-editor__actions">
+                        <label class="vorin-avatar-editor__button" for="{{ avatar_field.id_for_label }}">
+                            {% if user_settings.avatar %}{% trans "Change image" %}{% else %}{% trans "Upload image" %}{% endif %}
+                        </label>
+                        <span class="vorin-avatar-editor__filename" data-vorin-avatar-filename>
+                            {% if user_settings.avatar %}{% trans "Current image" %}{% else %}{% trans "No image selected" %}{% endif %}
+                        </span>
+                    </div>
+
+                    {% if user_settings.avatar %}
+                        <label class="vorin-avatar-editor__clear" for="{{ avatar_clear_id }}">
+                            <input type="checkbox" name="{{ avatar_clear_name }}" id="{{ avatar_clear_id }}" data-vorin-avatar-clear>
+                            <span>{% trans "Remove image" %}</span>
+                        </label>
+                    {% endif %}
+
+                    <input
+                        type="file"
+                        name="{{ avatar_field.html_name }}"
+                        accept="image/*"
+                        id="{{ avatar_field.id_for_label }}"
+                        class="vorin-avatar-editor__native"
+                        data-vorin-file-enhanced="1">
+
+                    {% for error in avatar_field.errors %}
+                        <p class="vorin-field__error">{{ error }}</p>
+                    {% endfor %}
                 </div>
             </div>
 
             <div class="vorin-form-stack">
                 {% for field in settings_form %}
-                    <div class="vorin-field">
-                        <label for="{{ field.id_for_label }}" class="vorin-field__label">{{ field.label }}</label>
-                        {{ field }}
-                        {% if field.help_text %}
-                            <p class="vorin-field__help">{{ field.help_text }}</p>
-                        {% endif %}
-                        {% for error in field.errors %}
-                            <p class="vorin-field__error">{{ error }}</p>
-                        {% endfor %}
-                    </div>
+                    {% if field.name != "avatar" %}
+                        <div class="vorin-field">
+                            <label for="{{ field.id_for_label }}" class="vorin-field__label">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                                <p class="vorin-field__help">{{ field.help_text }}</p>
+                            {% endif %}
+                            {% for error in field.errors %}
+                                <p class="vorin-field__error">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 {% endfor %}
             </div>
         </article>
