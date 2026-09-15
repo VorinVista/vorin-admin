@@ -4,7 +4,10 @@ from django import forms
 from django.apps import apps
 from django.contrib.auth import get_user_model
 
-from vorin_admin.profiles import get_or_create_user_settings
+from vorin_admin.profiles import (
+    get_or_create_user_settings,
+    sync_vorin_settings_to_wagtail_profile,
+)
 
 
 def install_wagtail_account_integration() -> bool:
@@ -79,6 +82,10 @@ def install_wagtail_account_integration() -> bool:
                 elif library_image:
                     user_settings.avatar.name = library_image.file.name
                     user_settings.save(update_fields=["avatar", "updated_at"])
+
+                avatar_name = getattr(user_settings.avatar, "name", "") or ""
+                if uploaded_avatar or library_image:
+                    sync_vorin_settings_to_wagtail_profile(user_settings, clear=not avatar_name)
 
             return profile
 

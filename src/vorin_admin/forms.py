@@ -5,6 +5,7 @@ from django.apps import apps
 from django.contrib.auth import get_user_model
 
 from vorin_admin.models import VorinUserSettings
+from vorin_admin.profiles import sync_vorin_settings_to_wagtail_profile
 
 User = get_user_model()
 
@@ -101,5 +102,11 @@ class VorinUserSettingsForm(forms.ModelForm):
         if commit and library_image and not uploaded_avatar:
             user_settings.avatar.name = library_image.file.name
             user_settings.save(update_fields=["avatar", "updated_at"])
+
+        if commit:
+            avatar_name = getattr(user_settings.avatar, "name", "") or ""
+            avatar_changed = uploaded_avatar or bool(library_image) or avatar_name != self._original_avatar_name
+            if avatar_changed:
+                sync_vorin_settings_to_wagtail_profile(user_settings, clear=not avatar_name)
 
         return user_settings

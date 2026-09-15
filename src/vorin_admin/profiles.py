@@ -1,9 +1,6 @@
 from __future__ import annotations
 
-from pathlib import Path
-
 from django.contrib.auth import get_user_model
-from django.core.files.base import ContentFile
 from django.core.exceptions import ObjectDoesNotExist
 
 
@@ -28,17 +25,12 @@ def _field_name(field_file) -> str:
     return getattr(field_file, "name", "") or ""
 
 
-def _copy_field_file(source, target) -> bool:
+def _alias_field_file(source, target) -> bool:
     source_name = _field_name(source)
     if not source_name:
         return False
 
-    filename = Path(source_name).name
-    source.open("rb")
-    try:
-        target.save(filename, ContentFile(source.read()), save=False)
-    finally:
-        source.close()
+    target.name = source_name
     return True
 
 
@@ -63,7 +55,7 @@ def sync_vorin_settings_to_wagtail_profile(user_settings, *, clear: bool = False
             _save_fields(profile, ["avatar"])
         return profile
 
-    if _copy_field_file(user_settings.avatar, profile.avatar):
+    if _alias_field_file(user_settings.avatar, profile.avatar):
         _save_fields(profile, ["avatar"])
 
     return profile
@@ -78,7 +70,7 @@ def sync_wagtail_profile_to_vorin_settings(profile, *, clear: bool = False):
             _save_fields(user_settings, ["avatar", "updated_at"])
         return user_settings
 
-    if _copy_field_file(profile.avatar, user_settings.avatar):
+    if _alias_field_file(profile.avatar, user_settings.avatar):
         _save_fields(user_settings, ["avatar", "updated_at"])
 
     return user_settings
