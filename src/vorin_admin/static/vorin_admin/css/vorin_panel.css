@@ -2828,7 +2828,7 @@ body.vorin-admin-shell .vorin-admin-action:not(.vorin-admin-action--ghost):is(:l
 
 .dark .vorin-input::placeholder,
 .dark .vorin-textarea::placeholder {
-    color: #94a3b8;
+    color: #64748b;
     opacity: 1;
 }
 
@@ -3376,7 +3376,7 @@ body[data-vorin-sidebar-open="false"] #nav-sidebar-inner {
 
 .dark .change-form #content-main input::placeholder,
 .dark .change-form #content-main textarea::placeholder {
-    color: #94a3b8;
+    color: #64748b;
     opacity: 1;
 }
 

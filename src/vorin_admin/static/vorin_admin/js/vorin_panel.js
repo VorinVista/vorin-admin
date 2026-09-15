@@ -1787,6 +1787,9 @@ function setupVorinAvatarEditors(root = document) {
             chooser.hidden = !open;
             editor.classList.toggle("is-choosing-avatar", open);
             trigger.setAttribute("aria-expanded", open ? "true" : "false");
+            if (open) {
+                chooser.scrollIntoView({ block: "center", inline: "nearest" });
+            }
         };
 
         trigger?.addEventListener("click", (event) => {
