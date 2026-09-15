@@ -2832,6 +2832,11 @@ body.vorin-admin-shell .vorin-admin-action:not(.vorin-admin-action--ghost):is(:l
     opacity: 1;
 }
 
+html.dark body.vorin-admin-shell .vorin-surface :is(input.vorin-input, textarea.vorin-textarea)::placeholder {
+    color: #334155 !important;
+    opacity: 1;
+}
+
 .vorin-field__help {
     color: #66788f;
     font-size: 0.88rem;
