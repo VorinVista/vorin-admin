@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from copy import deepcopy
+from hashlib import sha256
 from pathlib import Path
 from typing import Any
 
@@ -100,7 +101,7 @@ DEFAULT_COLORS = {
     },
 }
 
-ASSET_VERSION = str(int(Path(__file__).resolve().stat().st_mtime))
+ASSET_VERSION = sha256(Path(__file__).resolve().read_bytes()).hexdigest()[:12]
 
 
 def get_asset_version(path: str) -> str:
@@ -110,7 +111,7 @@ def get_asset_version(path: str) -> str:
         asset_path = Path(__file__).resolve().parent / "static" / relative_path
 
         if asset_path.exists():
-            return str(int(asset_path.stat().st_mtime))
+            return sha256(asset_path.read_bytes()).hexdigest()[:12]
 
     return ASSET_VERSION
 
