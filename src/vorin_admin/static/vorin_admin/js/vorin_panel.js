@@ -1215,6 +1215,24 @@ function getVorinPickerPlaceholder(input) {
     return "Choose the date";
 }
 
+function relocateVorinDatetimeNotes(control, row) {
+    if (!control || !row) {
+        return;
+    }
+
+    // Django's DateTimeShortcuts.js appends its timezone-mismatch warning as
+    // the last child of the input's *current* parent, whatever that is at
+    // the time it runs. Once vorin_panel.js has moved the input into
+    // .vorin-datetime-row__control, that's where the warning lands too --
+    // inflating the height of the absolutely-positioned control and pushing
+    // the picker icon down to overlap the note. Pull it out to sit below
+    // the control instead.
+    control.querySelectorAll(":scope > .timezonewarning").forEach((note) => {
+        note.classList.add("vorin-datetime-row__note");
+        row.appendChild(note);
+    });
+}
+
 function enhanceVorinSplitDateTimeFields() {
     document.querySelectorAll("p.datetime").forEach((block) => {
         const dateInput = block.querySelector("input.vDateField");
@@ -1234,6 +1252,7 @@ function enhanceVorinSplitDateTimeFields() {
                 : null;
 
         if (block.dataset.vorinDatetimeEnhanced === "1") {
+            const rows = block.querySelectorAll(".vorin-datetime-row");
             const controls = block.querySelectorAll(".vorin-datetime-row__control");
             if (controls[0] && dateShortcuts && !controls[0].contains(dateShortcuts)) {
                 controls[0].appendChild(dateShortcuts);
@@ -1241,6 +1260,8 @@ function enhanceVorinSplitDateTimeFields() {
             if (controls[1] && timeShortcuts && !controls[1].contains(timeShortcuts)) {
                 controls[1].appendChild(timeShortcuts);
             }
+            relocateVorinDatetimeNotes(controls[0], rows[0]);
+            relocateVorinDatetimeNotes(controls[1], rows[1]);
             return;
         }
 
@@ -1265,10 +1286,13 @@ function enhanceVorinSplitDateTimeFields() {
             return row;
         };
 
+        const dateRow = makeRow("Date", dateInput, dateShortcuts);
+        const timeRow = makeRow("Time", timeInput, timeShortcuts);
+
         const stack = document.createElement("div");
         stack.className = "vorin-datetime-stack";
-        stack.appendChild(makeRow("Date", dateInput, dateShortcuts));
-        stack.appendChild(makeRow("Time", timeInput, timeShortcuts));
+        stack.appendChild(dateRow);
+        stack.appendChild(timeRow);
 
         block.textContent = "";
         block.appendChild(stack);

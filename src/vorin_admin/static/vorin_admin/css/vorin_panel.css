@@ -1,4 +1,16 @@
-﻿:root {
+﻿/* Tells the browser which palette to use for UI it renders itself (native
+   <select> dropdown lists, scrollbars, form controls) -- without this,
+   those stay light-themed regardless of vorin's own .dark/.light class,
+   since that's a manual toggle independent of prefers-color-scheme. */
+.light {
+    color-scheme: light;
+}
+
+.dark {
+    color-scheme: dark;
+}
+
+:root {
     --vorin-hero-start: #010d24;
     --vorin-hero-mid: #011538;
     --vorin-hero-end: #0b2d73;
@@ -4286,6 +4298,30 @@ body[data-vorin-sidebar-open="false"] #nav-sidebar-inner {
    dark_mode.css -- never active under vorin's manual .dark class toggle. */
 .dark .calendar th {
     background: rgba(255, 255, 255, 0.04);
+}
+
+/* Django's own base.css hardcodes `.calendar table { background: white; }`
+   (a literal color, not a variable), so the calendar grid stayed a solid
+   white slab inside an otherwise dark-styled .calendarbox. */
+.dark .calendar table {
+    background: transparent;
+}
+
+/* Django's DateTimeShortcuts.js appends its timezone-mismatch note as the
+   last child of the date/time input's parent node -- by the time it runs,
+   that's .vorin-datetime-row__control (vorin_panel.js already moved the
+   input there), so the note lands inside the same absolutely-positioned
+   box as the picker icon and inflates its height, pushing the icon down to
+   overlap the note. vorin_panel.js relocates it here, as a sibling of the
+   control instead of a child. */
+.vorin-datetime-row__note {
+    color: rgba(102, 120, 143, 0.85);
+    font-size: 0.6875rem;
+    margin-top: 0.4rem;
+}
+
+.dark .vorin-datetime-row__note {
+    color: rgba(217, 226, 236, 0.62);
 }
 
 .dark .calendarbox .calendarnav-previous,
