@@ -29,7 +29,7 @@
                                     {% if item.has_permission %}
                                         <li class="vorin-sidebar__item">
                                             {% if item.children %}
-                                                <details class="vorin-sidebar-details"{% if item.active %} open{% endif %}>
+                                                <details class="vorin-sidebar-details" name="vorin-sidebar-accordion"{% if item.active %} open{% endif %}>
                                                     <summary class="vorin-sidebar-summary{% if item.active %} is-active{% endif %}">
                                                         <span class="vorin-sidebar-summary__main">
                                                             {% if item.icon %}
