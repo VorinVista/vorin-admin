@@ -4313,7 +4313,7 @@ body.vorin-admin-shell.change-form #content-main .vorin-sticky-actionbar {
     background: rgba(17, 28, 53, 0.96);
     border: 1px solid rgba(217, 226, 236, 0.18);
     border-radius: 1.1rem;
-    bottom: max(0.8rem, env(safe-area-inset-bottom));
+    bottom: calc(var(--vorin-footer-height, 0px) + max(0.8rem, env(safe-area-inset-bottom)));
     box-shadow: 0 20px 48px rgba(1, 12, 32, 0.28);
     box-sizing: border-box;
     display: flex;
@@ -4364,7 +4364,7 @@ body.vorin-admin-shell.change-form #content-main .vorin-sticky-actionbar .delete
 
     body.vorin-admin-shell.change-form #content-main .vorin-sticky-actionbar,
     body.vorin-admin-shell[data-vorin-sidebar-open="false"].change-form #content-main .vorin-sticky-actionbar {
-        bottom: max(0.55rem, env(safe-area-inset-bottom));
+        bottom: calc(var(--vorin-footer-height, 0px) + max(0.55rem, env(safe-area-inset-bottom)));
         display: grid;
         gap: 0.55rem;
         grid-template-columns: repeat(2, minmax(0, 1fr));

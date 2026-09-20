@@ -399,6 +399,7 @@ function setupVorinSidebarToggle() {
 
     window.addEventListener("resize", () => {
         syncVorinSidebarState();
+        syncVorinFooterHeight();
     });
 }
 
@@ -583,7 +584,25 @@ function setupVorinHistoryButtons() {
     });
 }
 
+function syncVorinFooterHeight() {
+    const footer = document.querySelector(".vorin-footer-bar");
+    document.documentElement.style.setProperty(
+        "--vorin-footer-height",
+        footer ? `${footer.getBoundingClientRect().height}px` : "0px"
+    );
+}
+
 function setupVorinStickyActionBar() {
+    // The page footer is its own position:sticky element pinned to the
+    // viewport bottom -- unrelated to the action bar's own fixed
+    // positioning below, so without accounting for the footer's height the
+    // two occupy the same bottom strip and the footer's opaque background
+    // can cover the action bar's buttons. Measured (not hardcoded) because
+    // the footer's own height varies: it wraps to multiple lines on narrow
+    // viewports, and its content (copyright text, nav links) differs per
+    // project.
+    syncVorinFooterHeight();
+
     if (!document.body?.classList.contains("change-form")) {
         return;
     }
