@@ -1867,7 +1867,7 @@ function setupVorinAvatarEditors(root = document) {
     });
 }
 
-window.addEventListener("DOMContentLoaded", () => {
+function vorinPanelInitOnContentLoaded() {
     cleanupVorinBrowserState();
     setupVorinThemeSwitch();
     setupVorinCommandLauncher();
@@ -1915,9 +1915,9 @@ window.addEventListener("DOMContentLoaded", () => {
     window.setTimeout(setupVorinDateTimeInputs, 500);
     window.setTimeout(setupVorinTimeSelects, 700);
     window.setTimeout(setupVorinAvatarEditors, 120);
-});
+}
 
-window.addEventListener("load", () => {
+function vorinPanelInitOnLoad() {
     setupVorinStickyActionBar();
     setupVorinAutocompleteFields();
     setupVorinPlainSelects();
@@ -1931,4 +1931,29 @@ window.addEventListener("load", () => {
     enhanceVorinKeyValueEditors();
     setupVorinRichEditorScrollbars();
     setupVorinEnhancementObserver();
-});
+}
+
+// A plain `window.addEventListener("DOMContentLoaded", ...)` is only safe
+// when this script itself is guaranteed to run before that event fires.
+// It normally is (this is a deferred script), but on at least one real
+// deployment the event fired without ever invoking a listener that had
+// already been registered against it -- confirmed via Chrome DevTools
+// Protocol (DOMDebugger.getEventListeners came back empty on the affected
+// page, byte-identical script, working fine on another project's
+// deployment of the same file), and confirmed the registered callback
+// itself is not at fault: manually replaying the exact captured callback
+// reference worked perfectly. Whatever the precise browser/edge-network
+// cause, checking readyState and running immediately when the document is
+// already past "loading" is the standard defensive fix for exactly this
+// class of problem, and costs nothing on the normal path.
+if (document.readyState === "loading") {
+    window.addEventListener("DOMContentLoaded", vorinPanelInitOnContentLoaded);
+} else {
+    vorinPanelInitOnContentLoaded();
+}
+
+if (document.readyState === "complete") {
+    vorinPanelInitOnLoad();
+} else {
+    window.addEventListener("load", vorinPanelInitOnLoad);
+}
