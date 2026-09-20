@@ -2383,10 +2383,33 @@ html.dark body.vorin-admin-shell.change-list .actions select option {
     color: #f8fbff;
 }
 
+/* Django's own admin/css/changelists.css sets "#changelist .actions select"
+   color via an ID selector, which outranks every class-only dark-theme rule
+   above regardless of source order, so the bulk-action dropdown text stayed
+   dark-on-dark. Match its specificity. */
+html.dark body.vorin-admin-shell.change-list #changelist .actions select {
+    color: #f8fbff;
+}
+
 html.dark body.vorin-admin-shell.change-list #result_list thead th {
     background: rgba(255, 255, 255, 0.03);
     border-bottom-color: rgba(217, 226, 236, 0.08);
     color: rgba(217, 226, 236, 0.7);
+}
+
+/* Django's admin/css/base.css sorts/hovers a column header via
+   background: var(--selected-bg), but that variable only gets a dark value
+   inside @media (prefers-color-scheme: dark) in Django's own dark_mode.css
+   -- which never applies here since vorin_admin's dark theme is a manual
+   class toggle, independent of OS preference. Left unset, --selected-bg
+   falls back to its light default (#e4e4e4). On top of that, the base
+   #result_list thead th rule just above sets its own background with
+   !important, which blocks any normal-weight rule (Django's var() included)
+   from ever changing a header's background -- so this needs !important too. */
+html.dark body.vorin-admin-shell.change-list #result_list thead th.sorted,
+html.dark body.vorin-admin-shell.change-list #result_list thead th .text a:hover,
+html.dark body.vorin-admin-shell.change-list #result_list thead th .text a:focus {
+    background: rgba(255, 255, 255, 0.08) !important;
 }
 
 html.dark body.vorin-admin-shell.change-list #result_list tbody td,
@@ -5693,6 +5716,7 @@ body[data-vorin-sidebar-open="false"] .vorin-sidebar {
 body.vorin-admin-shell .breadcrumbs {
     background: transparent;
     border: 0;
+    box-sizing: border-box;
     color: #66788f;
     margin: 0;
     max-width: none;
@@ -5818,6 +5842,15 @@ body.vorin-admin-shell #container,
 .vorin-sidebar__link {
     border-radius: 0.6rem;
     padding: 0 0.8rem;
+    transition: background 0.18s ease, color 0.18s ease;
+}
+
+/* Child links share the parent's hover/active background rules below but
+   never got their own border-radius/padding, so that highlight rendered
+   small and square instead of matching the parent's shape. */
+.vorin-sidebar__child-link {
+    border-radius: 0.6rem;
+    padding: 0 0.6rem;
     transition: background 0.18s ease, color 0.18s ease;
 }
 
